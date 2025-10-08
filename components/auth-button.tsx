@@ -13,7 +13,16 @@ export async function AuthButton() {
 
   return user ? (
     <div className="flex items-center gap-4">
-      Hey, {user.email}!
+      Hey, {user.user_metadata.full_name ? user.user_metadata.full_name : user.email}!
+      <img
+      src={
+        user.user_metadata.avatar_url
+        ? user.user_metadata.avatar_url
+        : "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541"
+      }
+      alt="User Avatar"
+      className="w-8 h-8 rounded-full"
+      />
       <LogoutButton />
     </div>
   ) : (
