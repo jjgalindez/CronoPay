@@ -116,7 +116,7 @@ export function LoginForm({
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
-              <GoogleSignUp callbackFunction={handleSignInWithGoogle} />
+              <GoogleSignUp callbackFunction={handleSignInWithGoogle} buttonText="Sign in with Google" />
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}

@@ -18,9 +18,10 @@ declare global {
 
 interface GoogleSignUpProps {
     callbackFunction: (response: any) => void;
+    buttonText?: string;
 }
 
-export const GoogleSignUp: React.FC<GoogleSignUpProps> = ({ callbackFunction }) => {
+export const GoogleSignUp: React.FC<GoogleSignUpProps> = ({ callbackFunction, buttonText }) => {
     useEffect(() => {
         // Intenta inicializar y renderizar el botón si la API de google ya está disponible.
         const initAndRender = (): boolean => {
@@ -39,7 +40,7 @@ export const GoogleSignUp: React.FC<GoogleSignUpProps> = ({ callbackFunction }) 
                         type: 'standard',
                         shape: 'rectangular',
                         theme: 'outline',
-                        text: 'signup_with',
+                        text: buttonText || 'signup_with',
                         size: 'large',
                         logo_alignment: 'left',
                     }
