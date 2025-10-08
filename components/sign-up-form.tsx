@@ -72,7 +72,7 @@ export function SignUpForm({
       if (error) throw error;
       
       // Si el login es exitoso, redirigir a la página protegida
-      router.push("/protected");
+      router.push("/dashboard");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred with Google sign-in");
     } finally {
