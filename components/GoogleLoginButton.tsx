@@ -1,22 +1,24 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client"; // 
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 const supabase = createClient();
 
 export default function GoogleLoginButton() {
+  const router = useRouter();
+
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: window.location.origin, // redirige aquí después del login
+        redirectTo: "/protected",
       },
     });
-
-    if (error) {
-      console.error("Error al iniciar sesión con Google:", error.message);
-    }
+    if (error) throw error;
+    // Si el login es exitoso, redirigir a la página protegida
+    router.push("/protected");
   };
 
   return (
