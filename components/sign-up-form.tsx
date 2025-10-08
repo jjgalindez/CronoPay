@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import GoogleSignUp from "./google-oauth";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 export function SignUpForm({
   className,
@@ -58,7 +59,27 @@ export function SignUpForm({
   };
 
   // Sign up with Google
-  
+  async function handleSignInWithGoogle(response: any) {
+    const supabase = createClient();
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: response.credential,
+      });
+      
+      if (error) throw error;
+      
+      // Si el login es exitoso, redirigir a la página protegida
+      router.push("/protected");
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "An error occurred with Google sign-in");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -115,7 +136,7 @@ export function SignUpForm({
               <span className="text-sm text-gray-500">Or continue with</span>
               <span className="h-px flex-1 bg-gray-200"></span>
             </div>
-            <GoogleSignUp />
+            <GoogleSignUp callbackFunction={handleSignInWithGoogle} />
             <div className="mt-4 text-center text-sm">
               Ya tienes una cuenta?{" "}
               <Link href="/auth/login" className="underline underline-offset-4">
