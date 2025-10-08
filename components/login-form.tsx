@@ -16,6 +16,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import GoogleSignUp from "./google-oauth";
+
 export function LoginForm({
   className,
   ...props
@@ -46,6 +48,28 @@ export function LoginForm({
       setIsLoading(false);
     }
   };
+
+  async function handleSignInWithGoogle(response: any) {
+    const supabase = createClient();
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: response.credential,
+      });
+      
+      if (error) throw error;
+      
+      // Si el login es exitoso, redirigir a la página protegida
+      router.push("/dashboard");
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "An error occurred with Google sign-in");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -92,6 +116,7 @@ export function LoginForm({
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
+              <GoogleSignUp callbackFunction={handleSignInWithGoogle} />
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}
