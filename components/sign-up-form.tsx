@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import GoogleSignUp from "./google-oauth";
 
 export function SignUpForm({
   className,
@@ -55,6 +56,9 @@ export function SignUpForm({
       setIsLoading(false);
     }
   };
+
+  // Sign up with Google
+  
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -106,6 +110,12 @@ export function SignUpForm({
                 {isLoading ? "Creating an account..." : "Sign up"}
               </Button>
             </div>
+            <div className="my-4 flex items-center gap-2">
+              <span className="h-px flex-1 bg-gray-200"></span>
+              <span className="text-sm text-gray-500">Or continue with</span>
+              <span className="h-px flex-1 bg-gray-200"></span>
+            </div>
+            <GoogleSignUp />
             <div className="mt-4 text-center text-sm">
               Ya tienes una cuenta?{" "}
               <Link href="/auth/login" className="underline underline-offset-4">
