@@ -6,6 +6,7 @@ import "./globals.css";
 import { Footer } from "@/components/layout/Footer";
 
 
+
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
