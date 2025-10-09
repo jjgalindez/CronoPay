@@ -1,0 +1,63 @@
+import { EnvVarWarning } from "@/components/env-var-warning";
+import { AuthButton } from "@/components/auth-button";
+import { hasEnvVars } from "@/lib/utils";
+import Link from "next/link";
+import { ThemeSwitcher } from "@/components/theme-switcher";
+
+interface NavbarProps {
+  variant?: 'landing' | 'app';
+  fixed?: boolean;
+}
+
+export default function Navbar({ variant = 'landing', fixed = true }: NavbarProps) {
+  const isLanding = variant === 'landing';
+  const positionClass = fixed ? 'fixed' : 'relative';
+  
+  return (
+    <header className={`${positionClass} w-full bg-background/70 backdrop-blur z-50 border-b border-border`}>
+      <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+        <Link href="/" className="text-2xl font-bold text-primary">
+          Cronopay
+        </Link>
+        
+        {isLanding ? (
+          // Navegación para Landing Page
+          <ul className="hidden md:flex space-x-8 font-medium">
+            <li><a href="#features" className="text-foreground hover:text-primary transition">Características</a></li>
+            <li><a href="#benefits" className="text-foreground hover:text-primary transition">Beneficios</a></li>
+            <li><a href="#contact" className="text-foreground hover:text-primary transition">Contacto</a></li>
+          </ul>
+        ) : (
+          // Navegación para App
+          <ul className="hidden md:flex space-x-8 font-medium">
+            <li>
+              <Link href="/" className="text-foreground hover:text-primary transition">
+                Inicio
+              </Link>
+            </li>
+            <li>
+              <Link href="/funcionalidades" className="text-foreground hover:text-primary transition">
+                Funcionalidades
+              </Link>
+            </li>
+            <li>
+              <Link href="/pagos" className="text-foreground hover:text-primary transition">
+                Pagos
+              </Link>
+            </li>
+            <li>
+              <Link href="/reportes" className="text-foreground hover:text-primary transition">
+                Reportes
+              </Link>
+            </li>
+          </ul>
+        )}
+        
+        <div className="flex items-center gap-3">
+          <ThemeSwitcher />
+          {!hasEnvVars ? <EnvVarWarning /> : <AuthButton />}
+        </div>
+      </nav>
+    </header>
+  )
+}

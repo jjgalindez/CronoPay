@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { createClient } from "@/lib/supabase/server";
-import { LogoutButton } from "./logout-button";
+import { UserDropdown } from "./user-dropdown";
 
 export async function AuthButton() {
   const supabase = await createClient();
@@ -12,19 +12,7 @@ export async function AuthButton() {
   } = await supabase.auth.getUser();
 
   return user ? (
-    <div className="flex items-center gap-4">
-      Hey, {user.user_metadata.full_name ? user.user_metadata.full_name : user.email}!
-      <img
-      src={
-        user.user_metadata.avatar_url
-        ? user.user_metadata.avatar_url
-        : "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541"
-      }
-      alt="User Avatar"
-      className="w-8 h-8 rounded-full"
-      />
-      <LogoutButton />
-    </div>
+    <UserDropdown user={user} />
   ) : (
     <div className="flex gap-2">
       <Button asChild size="sm" variant={"outline"}>
