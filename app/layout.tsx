@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-
-import "./globals.css";
 import { Footer } from "@/components/layout/Footer";
 
+import "./globals.css";
 
 
 const defaultUrl = process.env.VERCEL_URL
@@ -13,8 +12,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Aplicacion para manejas tus finanzas",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Cronopay — Gestión moderna de pagos",
+  description: "Simplifica la administración de tus transacciones con un diseño moderno, seguro y fácil de usar.",
 };
 
 const geistSans = Geist({
@@ -28,10 +27,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-      
-
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <body className={`${geistSans.className} antialiased`}>
         <ThemeProvider
           attribute="class"
@@ -40,8 +37,8 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Footer />
         </ThemeProvider>
-        <Footer/>
       </body>
     </html>
   );
