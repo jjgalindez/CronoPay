@@ -3,14 +3,17 @@ import { AuthButton } from "@/components/auth-button";
 import { hasEnvVars } from "@/lib/utils";
 import Link from "next/link";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { Bell } from "lucide-react";
 
 interface NavbarProps {
-  variant?: 'landing' | 'app';
+  variant?: 'landing' | 'app' | 'minimal';
   fixed?: boolean;
 }
 
 export default function Navbar({ variant = 'landing', fixed = true }: NavbarProps) {
   const isLanding = variant === 'landing';
+  const isApp = variant === 'app';
+  const isMinimal = variant === 'minimal';
   const positionClass = fixed ? 'fixed' : 'relative';
   
   return (
@@ -27,11 +30,11 @@ export default function Navbar({ variant = 'landing', fixed = true }: NavbarProp
             <li><a href="#benefits" className="text-foreground hover:text-primary transition">Beneficios</a></li>
             <li><a href="#contact" className="text-foreground hover:text-primary transition">Contacto</a></li>
           </ul>
-        ) : (
+        ) : isApp ? (
           // Navegación para App
           <ul className="hidden md:flex space-x-8 font-medium">
             <li>
-              <Link href="/" className="text-foreground hover:text-primary transition">
+              <Link href="/protected" className="text-foreground hover:text-primary transition">
                 Inicio
               </Link>
             </li>
@@ -51,9 +54,19 @@ export default function Navbar({ variant = 'landing', fixed = true }: NavbarProp
               </Link>
             </li>
           </ul>
+        ) : (
+          // Variante minimal - sin navegación
+          <div></div>
         )}
         
         <div className="flex items-center gap-3">
+          <button
+            className="relative text-foreground hover:text-primary transition-colors"
+            aria-label="Notificaciones"
+          >
+            <Bell className="w-5 h-5" />
+            <span className="absolute top-0 right-0 block w-2 h-2 bg-red-500 rounded-full"></span>
+          </button>
           <ThemeSwitcher />
           {!hasEnvVars ? <EnvVarWarning /> : <AuthButton />}
         </div>

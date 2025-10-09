@@ -1,11 +1,15 @@
+import Navbar from "@/components/layout/navbar";
 import { UpdatePasswordForm } from "@/components/update-password-form";
 
 export default function Page() {
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <UpdatePasswordForm />
+    <>
+      <Navbar variant="minimal" fixed={true} />
+      <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+        <div className="w-full max-w-sm">
+          <UpdatePasswordForm />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
