@@ -1,5 +1,8 @@
 'use client'
 
+import Link from "next/link"
+import { Fragment } from "react"
+
 // import { useState } from 'react'
 // import { Dialog, DialogPanel } from '@headlessui/react'
 // import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
@@ -15,7 +18,7 @@ export default function HeroSection() {
   //const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <div className="bg-background">
+    <>
       {/* <header className="absolute inset-x-0 top-0 z-50">
         <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8">
           <div className="flex lg:flex-1">
@@ -98,64 +101,209 @@ export default function HeroSection() {
           </DialogPanel>
         </Dialog>
       </header> */}
+      <div className="bg-background text-foreground">
+      <main>
+        <section className="pt-32 pb-20 px-6 bg-background">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Contenido de texto - lado izquierdo */}
+              <div className="text-center lg:text-left">
+                <h2 className="text-5xl font-extrabold text-foreground mb-6">
+                  Gestiona tus pagos con facilidad
+                </h2>
+                <p className="text-lg text-muted-foreground mb-8">
+                  Cronopay simplifica la administración de tus transacciones con un diseño moderno, seguro y fácil de usar.
+                </p>
+                <div className="flex justify-center lg:justify-start gap-4">
+                  <Link
+                    href="/auth/sign-up"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 py-3 rounded-lg transition"
+                  >
+                    Comenzar ahora
+                  </Link>
+                  <a
+                    href="#features"
+                    className="border border-primary text-primary hover:bg-primary/10 font-semibold px-6 py-3 rounded-lg transition"
+                  >
+                    Ver más
+                  </a>
+                </div>
+              </div>
+              
+              {/* Imagen - lado derecho */}
+              <div className="flex justify-center lg:justify-end">
+                <div className="w-full max-w-lg rounded-2xl shadow-xl bg-muted overflow-hidden">
+                  <img 
+                    src="https://multipurposethemes.com/wp-content/uploads/2025/01/Power-BI-Bootstrap-Admin-Templates.jpg" 
+                    alt="Cronopay Dashboard Preview" 
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-      <div className="bg-background relative isolate px-6 pt-14 lg:px-8">
-        <div
-          aria-hidden="true"
-          className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
-        >
-          <div
-            style={{
-              clipPath:
-                'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-            }}
-            className="relative left-[calc(50%-11rem)] aspect-1155/678 w-144.5 -translate-x-1/2 rotate-30 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-288.75"
-          />
-        </div>
-        <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
-          <div className="hidden sm:mb-8 sm:flex sm:justify-center">
-            <div className="relative rounded-full px-3 py-1 text-sm/6 text-gray-400 ring-1 ring-white/10 hover:ring-white/20">
-              Announcing our next round of funding.{' '}
-              <a href="#" className="font-semibold text-indigo-400">
-                <span aria-hidden="true" className="absolute inset-0" />
-                Read more <span aria-hidden="true">&rarr;</span>
-              </a>
+
+        <section id="features" className="py-20 bg-card">
+          <div className="max-w-6xl mx-auto px-6">
+            <h3 className="text-3xl font-bold text-center mb-14 text-foreground">
+              Características principales
+            </h3>
+            <div className="grid md:grid-cols-3 gap-10">
+              <div className="p-6 rounded-2xl bg-muted hover:bg-muted/80 transition shadow-sm">
+                <div className="text-primary text-4xl mb-4">💳</div>
+                <h4 className="font-semibold text-xl mb-2 text-foreground">Pagos inteligentes</h4>
+                <p className="text-muted-foreground">
+                  Procesa y organiza tus pagos con algoritmos que optimizan tiempo y seguridad.
+                </p>
+              </div>
+              <div className="p-6 rounded-2xl bg-muted hover:bg-muted/80 transition shadow-sm">
+                <div className="text-primary text-4xl mb-4">📊</div>
+                <h4 className="font-semibold text-xl mb-2 text-foreground">Reportes detallados</h4>
+                <p className="text-muted-foreground">
+                  Accede a estadísticas visuales de tus ingresos, gastos y flujo de efectivo.
+                </p>
+              </div>
+              <div className="p-6 rounded-2xl bg-muted hover:bg-muted/80 transition shadow-sm">
+                <div className="text-primary text-4xl mb-4">🔒</div>
+                <h4 className="font-semibold text-xl mb-2 text-foreground">Seguridad avanzada</h4>
+                <p className="text-muted-foreground">
+                  Tu información está protegida con cifrado de nivel bancario.
+                </p>
+              </div>
             </div>
           </div>
-          <div className="text-center">
-            <h1 className="text-foreground text-5xl font-semibold tracking-tight text-balance text-white sm:text-7xl">
-              Data to enrich your online business
-            </h1>
-            <p className="text-muted mt-8 text-lg font-medium text-pretty text-gray-400 sm:text-xl/8">
-              Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt amet
-              fugiat veniam occaecat.
-            </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <a
-                href="#"
-                className="rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-              >
-                Get started
-              </a>
-              <a href="#" className="text-sm/6 font-semibold text-white">
-                Learn more <span aria-hidden="true">→</span>
-              </a>
+        </section>
+
+        {/* Dashboard Info Section */}
+        <section className="py-20 bg-background">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Contenido de texto - lado izquierdo */}
+              <div className="text-center lg:text-left">
+                <h3 className="text-3xl font-bold text-foreground mb-6">
+                  Interface intuitiva y moderna
+                </h3>
+                <p className="text-lg text-muted-foreground mb-8">
+                  Dashboard diseñado para facilitar la gestión de todos tus pagos recurrentes desde una sola pantalla
+                </p>
+                
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                      <svg className="w-3 h-3 text-primary-foreground" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span className="text-foreground font-medium">Vista rápida de próximos vencimientos</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                      <svg className="w-3 h-3 text-primary-foreground" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span className="text-foreground font-medium">Categorización automática de gastos</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                      <svg className="w-3 h-3 text-primary-foreground" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span className="text-foreground font-medium">Sincronización multiplataforma</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Imagen del dashboard - lado derecho */}
+              <div className="flex justify-center lg:justify-end">
+                <div className="w-full max-w-lg rounded-2xl shadow-xl bg-muted overflow-hidden">
+                  <img 
+                    src="https://assets.qlik.com/image/upload/w_2378/q_auto/qlik/glossary/dashboard-examples/seo-hero-dashboard-examples_uyouwd.png" 
+                    alt="Cronopay Dashboard Interface" 
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div
-          aria-hidden="true"
-          className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
-        >
-          <div
-            style={{
-              clipPath:
-                'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-            }}
-            className="relative left-[calc(50%+3rem)] aspect-1155/678 w-144.5 -translate-x-1/2 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-288.75"
-          />
-        </div>
+        </section>
+
+        {/* Testimonials/Benefits Section */}
+        <section id="benefits" className="py-20 bg-background">
+          <div className="max-w-6xl mx-auto px-6 text-center">
+            <h3 className="text-3xl font-bold mb-12 text-foreground">
+              Confianza de nuestros usuarios
+            </h3>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-card rounded-2xl shadow-md p-6 hover:shadow-lg transition border border-border">
+                <p className="text-muted-foreground italic mb-6">
+                  "Cronopay me ha ahorrado horas en la gestión de pagos mensuales."
+                </p>
+                <div className="flex items-center justify-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-muted border-2 border-primary/20 overflow-hidden">
+                    <img 
+                      src="https://img.freepik.com/fotos-gratis/mulher-tenra-com-cor-de-sobrancelha-adicionada-as-sobrancelhas_231208-3536.jpg" 
+                      alt="Laura G." 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <p className="font-semibold text-primary">Laura G.</p>
+                </div>
+              </div>
+              <div className="bg-card rounded-2xl shadow-md p-6 hover:shadow-lg transition border border-border">
+                <p className="text-muted-foreground italic mb-6">
+                  "Una plataforma moderna y fácil de entender incluso para mi equipo."
+                </p>
+                <div className="flex items-center justify-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-muted border-2 border-primary/20 overflow-hidden">
+                    <img 
+                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" 
+                      alt="Andrés P." 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <p className="font-semibold text-primary">Andrés P.</p>
+                </div>
+              </div>
+              <div className="bg-card rounded-2xl shadow-md p-6 hover:shadow-lg transition border border-border">
+                <p className="text-muted-foreground italic mb-6">
+                  "Desde que uso Cronopay, el seguimiento de mis finanzas es mucho más claro."
+                </p>
+                <div className="flex items-center justify-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-muted border-2 border-primary/20 overflow-hidden">
+                    <img 
+                      src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" 
+                      alt="Camila R." 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <p className="font-semibold text-primary">Camila R.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section id="contact" className="py-20 bg-primary text-primary-foreground text-center">
+          <h3 className="text-4xl font-bold mb-6">
+            ¿Listo para comenzar con Cronopay?
+          </h3>
+          <p className="text-primary-foreground/80 mb-10">
+            Regístrate hoy y transforma la forma en que manejas tus pagos.
+          </p>
+          <Link
+            href="/auth/sign-up"
+            className="bg-background text-foreground font-semibold px-8 py-3 rounded-lg hover:bg-muted transition"
+          >
+            Crear cuenta
+          </Link>
+        </section>
+      </main>
       </div>
-    </div>
-  )
+    </>
+  );
 }
