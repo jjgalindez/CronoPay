@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { InfoIcon } from "lucide-react";
-import { FetchDataSteps } from "@/components/tutorial/fetch-data-steps";
+import { PaymentList } from "@/components/payments/PaymentList";
+import { PaymentCalendar } from "@/components/payments/PaymentCalendar";
+import { PaymentSummary } from "@/components/payments/PaymentSummary";
 
 export default async function ProtectedPage() {
   const supabase = await createClient();
@@ -11,26 +12,27 @@ export default async function ProtectedPage() {
     redirect("/auth/login");
   }
 
+  const payments = [
+    { id: "1", name: "Netflix - Suscripción", amount: 15, dueDate: "2025-11-06", status: "Pendiente" as const },
+    { id: "2", name: "Internet Claro", amount: 38, dueDate: "2025-11-08", status: "Pagado" as const},
+    { id: "3", name: "Spotify Premium", amount: 9, dueDate: "2025-11-10", status: "Pendiente" as const},
+    { id: "4", name: "Enel - Energía", amount: 120, dueDate: "2025-11-15", status: "Pendiente" as const},
+  ];
+
   return (
-    <div className=" flex-1 w-full flex flex-col gap-12">
-      <div className="w-full">
-        <div className="bg-accent text-sm p-3 px-5 rounded-md text-foreground flex gap-3 items-center">
-          <InfoIcon size="16" strokeWidth={2} />
-          This is a protected page that you can only see as an authenticated
-          user
+    <div className="flex-1 w-full flex flex-col gap-12">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Lista ocupa 2 columnas */}
+        <div className="md:col-span-2">
+          <PaymentList payments={payments} />
         </div>
+        {/* Calendario */}
+        <PaymentCalendar />
       </div>
-      <div className="flex flex-col gap-2 items-start">
-        <h2 className="font-bold text-2xl mb-4">Your user details</h2>
-        <pre className="text-xs font-mono p-3 rounded border max-h-32 overflow-auto">
-          {JSON.stringify(data.claims, null, 2)}
-        </pre>
-      </div>
-      <div>
-        <h2 className="font-bold text-2xl mb-4">Next steps</h2>
-        <FetchDataSteps />
-        
-      </div>
+
+      {/* Resumen */}
+      <PaymentSummary total={287} paid={38} upcoming={3} />
     </div>
+     
   );
 }
