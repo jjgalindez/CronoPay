@@ -1,3 +1,4 @@
+
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PaymentList } from "@/components/payments/PaymentList";
@@ -6,12 +7,12 @@ import { PaymentSummary } from "@/components/payments/PaymentSummary";
 
 export default async function ProtectedPage() {
   const supabase = await createClient();
-
-  const { data, error } = await supabase.auth.getClaims();
-  if (error || !data?.claims) {
+  const { data: { user }, error } = await supabase.auth.getUser();
+  
+  if (error || !user) {
     redirect("/auth/login");
   }
-
+  
   const payments = [
     { id: "1", name: "Netflix - Suscripción", amount: 15, dueDate: "2025-11-06", status: "Pendiente" as const },
     { id: "2", name: "Internet Claro", amount: 38, dueDate: "2025-11-08", status: "Pagado" as const},
@@ -33,6 +34,5 @@ export default async function ProtectedPage() {
       {/* Resumen */}
       <PaymentSummary total={144} paid={38} upcoming={3} />
     </div>
-     
   );
 }

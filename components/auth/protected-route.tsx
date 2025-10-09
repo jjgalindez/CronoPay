@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import type { User } from "@supabase/supabase-js";
 
 interface ProtectedRouteProps {
@@ -68,12 +69,7 @@ export function ProtectedRoute({
   // Mostrar loading mientras se verifica la autenticación
   if (loading) {
     return loadingComponent || (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          <p className="text-muted-foreground">Verificando autenticación...</p>
-        </div>
-      </div>
+      <LoadingSpinner message="Verificando autenticación..." />
     );
   }
 

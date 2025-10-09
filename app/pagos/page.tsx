@@ -1,8 +1,10 @@
 import { ProtectedRoute } from "@/components/auth/protected-route";
+import Navbar from "@/components/layout/navbar";
 
 export default function PagosPage() {
   return (
     <ProtectedRoute>
+      <Navbar variant="app" fixed={false} />
       <div className="container mx-auto px-6 py-8">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-foreground">Gestión de Pagos</h1>
