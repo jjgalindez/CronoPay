@@ -3,7 +3,6 @@ import { AuthButton } from "@/components/auth-button";
 import { hasEnvVars } from "@/lib/utils";
 import Link from "next/link";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { Bell } from "lucide-react";
 
 interface NavbarProps {
   variant?: 'landing' | 'app' | 'minimal';
@@ -60,13 +59,6 @@ export default function Navbar({ variant = 'landing', fixed = true }: NavbarProp
         )}
         
         <div className="flex items-center gap-3">
-          <button
-            className="relative text-foreground hover:text-primary transition-colors"
-            aria-label="Notificaciones"
-          >
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-0 right-0 block w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
           <ThemeSwitcher />
           {!hasEnvVars ? <EnvVarWarning /> : <AuthButton />}
         </div>

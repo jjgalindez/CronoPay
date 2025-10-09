@@ -1,6 +1,5 @@
-import { Nav } from "@/components/layout/Nav";
-import Navbar from "@/components/layout/navbar";
 
+import Navbar from "@/components/layout/navbar";
 
 export default function ProtectedLayout({
   children,
@@ -9,9 +8,9 @@ export default function ProtectedLayout({
 }) {
   return (
     <main className="min-h-screen flex flex-col">
+      <Navbar variant="app" fixed={false} />
       <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <Navbar variant="app" fixed={false} />
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
+        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5 pt-8">
           {children}
         </div>
       </div>

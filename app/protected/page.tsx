@@ -1,11 +1,16 @@
-import { validateServerSession } from "@/lib/auth/server-auth";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import { PaymentList } from "@/components/payments/PaymentList";
 import { PaymentCalendar } from "@/components/payments/PaymentCalendar";
 import { PaymentSummary } from "@/components/payments/PaymentSummary";
 
 export default async function ProtectedPage() {
-  // Validar sesión - redirige automáticamente si no está autenticado
-  const user = await validateServerSession();
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.auth.getClaims();
+  if (error || !data?.claims) {
+    redirect("/auth/login");
+  }
 
   const payments = [
     { id: "1", name: "Netflix - Suscripción", amount: 15, dueDate: "2025-11-06", status: "Pendiente" as const },
@@ -16,11 +21,6 @@ export default async function ProtectedPage() {
 
   return (
     <div className="flex-1 w-full flex flex-col gap-12">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Bienvenido, {user.email}</h1>
-        <p className="text-muted-foreground">Gestiona tus pagos de forma eficiente</p>
-      </div>
-      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Lista ocupa 2 columnas */}
         <div className="md:col-span-2">
