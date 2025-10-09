@@ -18,7 +18,7 @@ export function Nav() {
 
         {/* Menú de navegación */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-          <Link href="/" className="hover:text-primary transition-colors">Inicio</Link>
+          <Link href="/protected" className="hover:text-primary transition-colors">Inicio</Link>
           <Link href="/features" className="hover:text-primary transition-colors">Funcionalidades</Link>
           <Link href="/payments" className="hover:text-primary transition-colors">Pagos</Link>
           <Link href="/reports" className="hover:text-primary transition-colors">Reportes</Link>
