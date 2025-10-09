@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 
 import "./globals.css";
+import { Footer } from "@/components/layout/Footer";
 
 
 const defaultUrl = process.env.VERCEL_URL
@@ -39,6 +40,7 @@ export default function RootLayout({
         >
           {children}
         </ThemeProvider>
+        <Footer/>
       </body>
     </html>
   );

@@ -16,7 +16,7 @@ export default async function ProtectedPage() {
     { id: "1", name: "Netflix - Suscripción", amount: 15, dueDate: "2025-11-06", status: "Pendiente" as const },
     { id: "2", name: "Internet Claro", amount: 38, dueDate: "2025-11-08", status: "Pagado" as const},
     { id: "3", name: "Spotify Premium", amount: 9, dueDate: "2025-11-10", status: "Pendiente" as const},
-    { id: "4", name: "Enel - Energía", amount: 120, dueDate: "2025-11-15", status: "Pendiente" as const},
+    { id: "4", name: "Energía Ceo", amount: 120, dueDate: "2025-11-15", status: "Pendiente" as const},
   ];
 
   return (
@@ -31,7 +31,7 @@ export default async function ProtectedPage() {
       </div>
 
       {/* Resumen */}
-      <PaymentSummary total={287} paid={38} upcoming={3} />
+      <PaymentSummary total={144} paid={38} upcoming={3} />
     </div>
      
   );
