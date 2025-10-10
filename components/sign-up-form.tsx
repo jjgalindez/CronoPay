@@ -21,6 +21,7 @@ export function SignUpForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
@@ -41,11 +42,14 @@ export function SignUpForm({
     }
 
     try {
-      const { error } = await  supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/protected`,
+          data: {
+            full_name: name,
+          }
         },
       });
       if (error) throw error;
@@ -62,15 +66,15 @@ export function SignUpForm({
     const supabase = createClient();
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: 'google',
         token: response.credential,
       });
-      
+
       if (error) throw error;
-      
+
       // Si el login es exitoso, redirigir a la página protegida
       router.push("/dashboard");
     } catch (error: unknown) {
@@ -90,6 +94,17 @@ export function SignUpForm({
         <CardContent>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Nombre</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Juan Perez"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
