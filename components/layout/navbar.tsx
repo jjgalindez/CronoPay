@@ -19,7 +19,7 @@ export default function Navbar({ variant = 'landing', fixed = true }: NavbarProp
   return (
     <header className={`${positionClass} w-full bg-background/70 backdrop-blur z-50 border-b border-border`}>
       <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-        <Link href="/" className="text-2xl font-bold text-primary">
+        <Link href="/" className="text-2xl font-bold text-lime-800">
           Cronopay
         </Link>
 

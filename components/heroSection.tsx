@@ -117,13 +117,13 @@ export default function HeroSection() {
                 <div className="flex justify-center lg:justify-start gap-4">
                   <Link
                     href="/auth/sign-up"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 py-3 rounded-lg transition"
+                    className="bg-blue-500 hover:bg-blue-400 dark:bg-blue-900 dark:hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg transition"
                   >
                     Comenzar ahora
                   </Link>
                   <a
                     href="#features"
-                    className="border border-primary text-primary hover:bg-primary/10 font-semibold px-6 py-3 rounded-lg transition"
+                    className="border border-blue-500 text-blue-500 hover:bg-blue-500/30 dark:hover:bg-blue-500/10 font-semibold px-6 py-3 rounded-lg transition"
                   >
                     Ver más
                   </a>
@@ -288,7 +288,7 @@ export default function HeroSection() {
         </section>
 
         {/* CTA Section */}
-        <section id="contact" className="py-20 bg-primary text-primary-foreground text-center">
+        <section id="contact" className="py-20 bg-blue-950 text-primary-foreground text-center">
           <h3 className="text-4xl font-bold mb-6">
             ¿Listo para comenzar con Cronopay?
           </h3>
@@ -297,7 +297,7 @@ export default function HeroSection() {
           </p>
           <Link
             href="/auth/sign-up"
-            className="bg-background text-foreground font-semibold px-8 py-3 rounded-lg hover:bg-muted transition"
+            className="bg-background text-foreground font-semibold px-8 py-3 rounded-lg hover:bg-background/60 transition"
           >
             Crear cuenta
           </Link>

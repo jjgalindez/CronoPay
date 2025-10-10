@@ -31,7 +31,7 @@ export const GoogleSignUp: React.FC<GoogleSignUpProps> = ({ callbackFunction, bu
                 window.google.accounts.id.initialize({
                     client_id: '260786178265-k3im15pear08ktgbbp42mu96jv5hlb8j.apps.googleusercontent.com',
                     callback: callbackFunction,
-                    auto_select: false,
+                    auto_select: true,
                 });
 
                 window.google.accounts.id.renderButton(
