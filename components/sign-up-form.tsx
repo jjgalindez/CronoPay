@@ -151,7 +151,7 @@ export function SignUpForm({
               <span className="text-sm text-gray-500">Or continue with</span>
               <span className="h-px flex-1 bg-gray-200"></span>
             </div>
-            <GoogleSignUp callbackFunction={handleSignInWithGoogle} />
+            <GoogleSignUp buttonText="Registrarse con Google" redirectTo="/protected" />
             <div className="mt-4 text-center text-sm">
               Ya tienes una cuenta?{" "}
               <Link href="/auth/login" className="underline underline-offset-4">
