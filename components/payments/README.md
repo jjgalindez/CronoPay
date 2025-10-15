@@ -24,7 +24,7 @@ npx prisma migrate deploy
 ### 4. Insertar datos iniciales
 ```bash
 # Insertar categorías y métodos de pago por defecto
-npm run db:seed
+npm run db:seed (Ya estan agregados, no ejecutes de nuevo)
 ```
 
 ### 5. Verificar que todo funcione
