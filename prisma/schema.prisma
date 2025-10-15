@@ -10,6 +10,80 @@ datasource db {
   schemas   = ["auth", "public"]
 }
 
+model categoria {
+  id_categoria BigInt  @id @default(autoincrement())
+  nombre       String  @db.VarChar(100)
+  descripcion  String?
+  pago         pago[]
+
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model informe {
+  id_informe      BigInt          @id @default(autoincrement())
+  mes             Int
+  total_pagado    Decimal?        @default(0) @db.Decimal(12, 2)
+  total_pendiente Decimal?        @default(0) @db.Decimal(12, 2)
+  id_usuario      String          @db.Uuid
+  created_at      DateTime?       @default(now()) @db.Timestamp(6)
+  usuarios_perfil usuarios_perfil @relation(fields: [id_usuario], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+model metodo_pago {
+  id_metodo BigInt  @id @default(autoincrement())
+  tipo      String  @db.VarChar(50)
+  detalles  String?
+  pago      pago[]
+
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model pago {
+  id_pago           BigInt          @id @default(autoincrement())
+  monto             Decimal         @db.Decimal(12, 2)
+  fecha_vencimiento DateTime        @db.Date
+  estado            String?         @default("Pendiente") @db.VarChar(20)
+  id_usuario        String          @db.Uuid
+  id_categoria      BigInt?
+  id_metodo         BigInt?
+  created_at        DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at        DateTime?       @default(now()) @db.Timestamp(6)
+  titulo            String          @db.VarChar
+  categoria         categoria?      @relation(fields: [id_categoria], references: [id_categoria], onUpdate: NoAction)
+  metodo_pago       metodo_pago?    @relation(fields: [id_metodo], references: [id_metodo], onUpdate: NoAction)
+  usuarios_perfil   usuarios_perfil @relation(fields: [id_usuario], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  recordatorio      recordatorio[]
+
+  @@schema("public")
+}
+
+model recordatorio {
+  id_recordatorio BigInt    @id @default(autoincrement())
+  fecha_aviso     DateTime  @db.Date
+  mensaje         String?
+  id_pago         BigInt
+  created_at      DateTime? @default(now()) @db.Timestamp(6)
+  pago            pago      @relation(fields: [id_pago], references: [id_pago], onDelete: Cascade, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+model usuarios_perfil {
+  id         String    @id @db.Uuid
+  nombre     String?
+  avatar_url String
+  creado_en  DateTime? @default(now()) @db.Timestamp(6)
+  email      String    @unique @default("")
+  informe    informe[]
+  pago       pago[]
+
+  @@schema("public")
+}
+
 /// We could not retrieve columns for the underlying table. Either it has none or you are missing rights to see them. Please check your privileges.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -135,79 +209,6 @@ datasource db {
 // model users {
 // @@schema("auth")
 // }
-
-model categoria {
-  id_categoria BigInt  @id @default(autoincrement())
-  nombre       String  @db.VarChar(100)
-  descripcion  String?
-  pago         pago[]
-
-  @@schema("public")
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model informe {
-  id_informe      BigInt          @id @default(autoincrement())
-  mes             Int
-  total_pagado    Decimal?        @default(0) @db.Decimal(12, 2)
-  total_pendiente Decimal?        @default(0) @db.Decimal(12, 2)
-  id_usuario      String          @db.Uuid
-  created_at      DateTime?       @default(now()) @db.Timestamp(6)
-  usuarios_perfil usuarios_perfil @relation(fields: [id_usuario], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@schema("public")
-}
-
-model metodo_pago {
-  id_metodo BigInt  @id @default(autoincrement())
-  tipo      String  @db.VarChar(50)
-  detalles  String?
-  pago      pago[]
-
-  @@schema("public")
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model pago {
-  id_pago           BigInt          @id @default(autoincrement())
-  monto             Decimal         @db.Decimal(12, 2)
-  fecha_vencimiento DateTime        @db.Date
-  estado            String?         @default("Pendiente") @db.VarChar(20)
-  id_usuario        String          @db.Uuid
-  id_categoria      BigInt?
-  id_metodo         BigInt?
-  created_at        DateTime?       @default(now()) @db.Timestamp(6)
-  updated_at        DateTime?       @default(now()) @db.Timestamp(6)
-  categoria         categoria?      @relation(fields: [id_categoria], references: [id_categoria], onUpdate: NoAction)
-  metodo_pago       metodo_pago?    @relation(fields: [id_metodo], references: [id_metodo], onUpdate: NoAction)
-  usuarios_perfil   usuarios_perfil @relation(fields: [id_usuario], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  recordatorio      recordatorio[]
-
-  @@schema("public")
-}
-
-model recordatorio {
-  id_recordatorio BigInt    @id @default(autoincrement())
-  fecha_aviso     DateTime  @db.Date
-  mensaje         String?
-  id_pago         BigInt
-  created_at      DateTime? @default(now()) @db.Timestamp(6)
-  pago            pago      @relation(fields: [id_pago], references: [id_pago], onDelete: Cascade, onUpdate: NoAction)
-
-  @@schema("public")
-}
-
-model usuarios_perfil {
-  id         String    @id @db.Uuid
-  nombre     String?
-  avatar_url String
-  creado_en  DateTime? @default(now()) @db.Timestamp(6)
-  email      String    @unique @default("")
-  informe    informe[]
-  pago       pago[]
-
-  @@schema("public")
-}
 
 enum aal_level {
   aal1
