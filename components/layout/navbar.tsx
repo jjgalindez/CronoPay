@@ -44,7 +44,7 @@ export default function Navbar({ variant = 'landing', fixed = true }: NavbarProp
               </Link>
             </li>
             <li>
-              <Link href="/pagos" className="text-foreground hover:text-primary transition">
+              <Link href="/protected/payments" className="text-foreground hover:text-primary transition">
                 Pagos
               </Link>
             </li>

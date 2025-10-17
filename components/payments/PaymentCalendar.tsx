@@ -1,8 +1,8 @@
 "use client";
 
 export function PaymentCalendar() {
-  // Datos del mes actual (octubre 2025)
-  const currentDate = new Date(2025, 9, 9); // 9 de octubre de 2025
+  // Datos del mes actual (dinámico)
+  const currentDate = new Date(); // Fecha actual del sistema
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   
@@ -60,7 +60,7 @@ export function PaymentCalendar() {
       <div className="grid grid-cols-7 gap-1">
         {calendarDays.map((day, index) => {
           if (day === null) {
-            return <div key={index} className="p-2"></div>;
+            return <div key={`empty-${index}`} className="p-2"></div>;
           }
           
           const isToday = day === today;
@@ -68,7 +68,7 @@ export function PaymentCalendar() {
           
           return (
             <div
-              key={day}
+              key={`day-${index}-${day}`}
               className={`
                 p-2 text-center text-sm cursor-pointer rounded transition-colors
                 ${isToday 

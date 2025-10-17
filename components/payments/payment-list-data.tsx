@@ -56,14 +56,10 @@ export default function PaymentListData({ refreshKey }: PaymentListDataProps) {
 
   if (isLoading) {
     return (
-      <div className="bg-card rounded-lg border border-border">
-        <div className="p-6">
-          <div className="flex items-center justify-center py-8">
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-muted-foreground">Cargando pagos...</p>
-            </div>
-          </div>
+      <div className="flex items-center justify-center py-8">
+        <div className="flex items-center gap-3">
+          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-muted-foreground">Cargando pagos...</p>
         </div>
       </div>
     );
@@ -71,97 +67,85 @@ export default function PaymentListData({ refreshKey }: PaymentListDataProps) {
 
   if (error) {
     return (
-      <div className="bg-card rounded-lg border border-border">
-        <div className="p-6">
-          <div className="text-center py-8">
-            <p className="text-red-600 mb-2">Error al cargar los pagos</p>
-            <p className="text-sm text-muted-foreground">{error}</p>
-          </div>
-        </div>
+      <div className="text-center py-8">
+        <p className="text-red-600 mb-2">Error al cargar los pagos</p>
+        <p className="text-sm text-muted-foreground">{error}</p>
       </div>
     );
   }
 
   if (pagos.length === 0) {
     return (
-      <div className="bg-card rounded-lg border border-border">
-        <div className="p-6">
-          <div className="text-center py-8">
-            <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-            <p className="text-muted-foreground mb-2">No tienes pagos registrados</p>
-            <p className="text-sm text-muted-foreground">
-              Haz clic en "Agregar Pago" para comenzar.
-            </p>
-          </div>
-        </div>
+      <div className="text-center py-8">
+        <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
+        <p className="text-muted-foreground mb-2">No tienes pagos registrados</p>
+        <p className="text-sm text-muted-foreground">
+          Haz clic en "Agregar Pago" para comenzar.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-card rounded-lg border border-border">
-      <div className="p-6">
-        <div className="space-y-4">
-          {pagos.map((pago) => (
-            <div
-              key={pago.id_pago}
-              className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
-            >
-              <div className="flex items-start gap-4">
-                {/* Icono basado en categoría */}
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  {pago.categoria?.nombre === 'Entretenimiento' && <span className="text-primary">🎬</span>}
-                  {pago.categoria?.nombre === 'Servicios' && <span className="text-primary">⚡</span>}
-                  {pago.categoria?.nombre === 'Suscripciones' && <span className="text-primary">📱</span>}
-                  {pago.categoria?.nombre === 'Facturas' && <span className="text-primary">📄</span>}
-                  {!pago.categoria && <DollarSign className="h-5 w-5 text-primary" />}
-                </div>
+    <div className="space-y-3">
+      {pagos.map((pago) => (
+        <div
+          key={pago.id_pago}
+          className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
+        >
+          <div className="flex items-start gap-4">
+            {/* Icono basado en categoría */}
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              {pago.categoria?.nombre === 'Entretenimiento' && <span className="text-primary">🎬</span>}
+              {pago.categoria?.nombre === 'Servicios' && <span className="text-primary">⚡</span>}
+              {pago.categoria?.nombre === 'Suscripciones' && <span className="text-primary">📱</span>}
+              {pago.categoria?.nombre === 'Facturas' && <span className="text-primary">📄</span>}
+              {!pago.categoria && <DollarSign className="h-5 w-5 text-primary" />}
+            </div>
 
-                {/* Información del pago */}
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-semibold text-foreground">
-                      {pago.titulo}
-                    </h4>
-                    <PaymentStatusBadge status={pago.estado as "Pendiente" | "Pagado"} />
-                  </div>
-                  
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Tag className="h-3 w-3" />
-                      <span>{pago.categoria?.nombre || 'Sin categoría'}</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      <span>
-                        Vence: {new Date(pago.fecha_vencimiento).toLocaleDateString('es-ES')}
-                      </span>
-                    </div>
-                    
-                    {pago.metodo_pago && (
-                      <div className="flex items-center gap-1">
-                        <CreditCard className="h-3 w-3" />
-                        <span>{pago.metodo_pago.tipo}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+            {/* Información del pago */}
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h4 className="font-semibold text-foreground">
+                  {pago.titulo}
+                </h4>
+                <PaymentStatusBadge status={pago.estado as "Pendiente" | "Pagado"} />
               </div>
-
-              {/* Monto */}
-              <div className="text-right">
-                <p className="text-lg font-bold text-foreground">
-                  ${parseFloat(pago.monto).toFixed(2)}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {new Date(pago.created_at).toLocaleDateString('es-ES')}
-                </p>
+              
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Tag className="h-3 w-3" />
+                  <span>{pago.categoria?.nombre || 'Sin categoría'}</span>
+                </div>
+                
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-3 w-3" />
+                  <span>
+                    Vence: {new Date(pago.fecha_vencimiento).toLocaleDateString('es-ES')}
+                  </span>
+                </div>
+                
+                {pago.metodo_pago && (
+                  <div className="flex items-center gap-1">
+                    <CreditCard className="h-3 w-3" />
+                    <span>{pago.metodo_pago.tipo}</span>
+                  </div>
+                )}
               </div>
             </div>
-          ))}
+          </div>
+
+          {/* Monto */}
+          <div className="text-right">
+            <p className="text-lg font-bold text-foreground">
+              ${parseFloat(pago.monto).toFixed(2)}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {new Date(pago.created_at).toLocaleDateString('es-ES')}
+            </p>
+          </div>
         </div>
-      </div>
+      ))}
     </div>
   );
 }

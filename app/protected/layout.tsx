@@ -1,5 +1,11 @@
-
+import type { Metadata } from "next";
 import Navbar from "@/components/layout/navbar";
+
+export const metadata: Metadata = {
+  title: "Cronopay — Inicio",
+  description: "Simplifica la administración de tus transacciones con un diseño moderno, seguro y fácil de usar.",
+};
+
 
 export default function ProtectedLayout({
   children,

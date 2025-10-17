@@ -1,4 +1,4 @@
-# 🏗️ Configuración Rápida de Prisma y API - CronoPay
+#  Configuración Rápida de Prisma y API - CronoPay
 
 ## Pasos después de clonar el repo
 
@@ -12,10 +12,7 @@ npm install
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY=tu_anon_key
-
-# PostgreSQL
-DATABASE_URL="postgresql://usuario:password@localhost:5432/cronopay?schema=public"
-DIRECT_URL="postgresql://usuario:password@localhost:5432/cronopay?schema=public"
+# Prisma
 ```
 
 ### 3. Configuración de Prisma
@@ -35,8 +32,7 @@ npm run db:seed
 # Ejecutar aplicación
 npm run dev
 
-# Ir a http://localhost:3000/pagos
-# Probar crear un pago nuevo
+# Ir a http://localhost:3000/protected/payments
 ```
 
 ## 🔍 Verificación de APIs
@@ -127,7 +123,7 @@ Después de ejecutar `npm run db:seed`, tendrás:
 
 ## 🎯 Prueba rápida
 
-1. Ve a `/pagos`
+1. Ve a `/payments`
 2. Haz clic en "Agregar Pago"
 3. Llena el formulario:
    - Título: "Netflix"
@@ -137,4 +133,4 @@ Después de ejecutar `npm run db:seed`, tendrás:
    - Método: Tarjeta de Crédito
 4. Guarda y verifica que aparezca en la lista
 
-¡Listo! 🚀
+¡Listo!
