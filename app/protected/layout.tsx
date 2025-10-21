@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/layout/navbar";
+import { PaymentProvider } from "@/components/context/PaymentContext";
 
 export const metadata: Metadata = {
   title: "Cronopay — Inicio",
@@ -13,13 +14,15 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="min-h-screen flex flex-col">
-      <Navbar variant="app" fixed={false} />
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5 pt-8">
-          {children}
+    <PaymentProvider>
+      <main className="min-h-screen flex flex-col">
+        <Navbar variant="app" fixed={false} />
+        <div className="flex-1 w-full flex flex-col gap-20 items-center">
+          <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5 pt-8">
+            {children}
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </PaymentProvider>
   );
 }

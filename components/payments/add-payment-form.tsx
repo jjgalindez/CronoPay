@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar, CreditCard, DollarSign, Tag } from 'lucide-react';
+import { usePayments } from '@/components/context/PaymentContext';
 
 interface AddPaymentFormProps {
     onSuccess?: () => void;
@@ -33,6 +34,8 @@ interface MetodoPago {
 }
 
 export default function AddPaymentForm({ onSuccess, onCancel }: AddPaymentFormProps) {
+    const { addPayment, loading: contextLoading, error: contextError } = usePayments();
+    
     const [formData, setFormData] = useState<PaymentData>({
         titulo: '',
         monto: '',
@@ -88,24 +91,18 @@ export default function AddPaymentForm({ onSuccess, onCancel }: AddPaymentFormPr
         setError(null);
 
         try {
-            const response = await fetch('/api/pagos', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    titulo: formData.titulo,
-                    monto: parseFloat(formData.monto),
-                    fecha_vencimiento: formData.fecha_vencimiento,
-                    id_categoria: parseInt(formData.id_categoria),
-                    id_metodo: parseInt(formData.id_metodo),
-                }),
-            });
+            // Get category and payment method names
+            const selectedCategoria = categorias.find(c => c.id_categoria === formData.id_categoria);
+            const selectedMetodo = metodosPago.find(m => m.id_metodo === formData.id_metodo);
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Error al crear el pago');
-            }
+            await addPayment({
+                titulo: formData.titulo,
+                monto: parseFloat(formData.monto),
+                fecha_vencimiento: new Date(formData.fecha_vencimiento),
+                categoria: selectedCategoria?.nombre || '',
+                metodo_pago: selectedMetodo?.tipo || '',
+                estado: 'Pendiente'
+            });
 
             // Resetear formulario
             setFormData({

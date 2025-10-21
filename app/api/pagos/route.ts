@@ -38,12 +38,27 @@ export async function POST(request: NextRequest) {
 
     // Obtener datos del cuerpo de la petición
     const body = await request.json();
-    const { titulo, monto, fecha_vencimiento, id_categoria, id_metodo } = body;
+    const { titulo, monto, fecha_vencimiento, id_categoria, id_metodo, categoria, metodo_pago } = body;
 
     // Validaciones básicas
-    if (!titulo || !monto || !fecha_vencimiento || !id_categoria || !id_metodo) {
+    if (!titulo || !monto || !fecha_vencimiento) {
       return NextResponse.json(
-        { error: 'Todos los campos son requeridos' },
+        { error: 'Título, monto y fecha de vencimiento son requeridos' },
+        { status: 400 }
+      );
+    }
+
+    // Verificar que tenemos categoría y método (ya sea por ID o por nombre)
+    if (!id_categoria && !categoria) {
+      return NextResponse.json(
+        { error: 'Debe especificar una categoría' },
+        { status: 400 }
+      );
+    }
+
+    if (!id_metodo && !metodo_pago) {
+      return NextResponse.json(
+        { error: 'Debe especificar un método de pago' },
         { status: 400 }
       );
     }
@@ -53,6 +68,46 @@ export async function POST(request: NextRequest) {
         { error: 'El monto debe ser mayor a 0' },
         { status: 400 }
       );
+    }
+
+    // Resolver IDs de categoría y método de pago
+    let categoriaId: bigint;
+    let metodoId: bigint;
+
+    if (id_categoria) {
+      categoriaId = BigInt(id_categoria);
+    } else {
+      // Buscar categoría por nombre
+      const categoriaFound = await prisma.categoria.findFirst({
+        where: { nombre: categoria }
+      });
+      
+      if (!categoriaFound) {
+        return NextResponse.json(
+          { error: `Categoría "${categoria}" no encontrada` },
+          { status: 400 }
+        );
+      }
+      
+      categoriaId = categoriaFound.id_categoria;
+    }
+
+    if (id_metodo) {
+      metodoId = BigInt(id_metodo);
+    } else {
+      // Buscar método de pago por tipo
+      const metodoFound = await prisma.metodo_pago.findFirst({
+        where: { tipo: metodo_pago }
+      });
+      
+      if (!metodoFound) {
+        return NextResponse.json(
+          { error: `Método de pago "${metodo_pago}" no encontrado` },
+          { status: 400 }
+        );
+      }
+      
+      metodoId = metodoFound.id_metodo;
     }
 
     // Verificar si el usuario existe en la tabla usuarios_perfil
@@ -79,8 +134,8 @@ export async function POST(request: NextRequest) {
         monto: parseFloat(monto),
         fecha_vencimiento: new Date(fecha_vencimiento),
         id_usuario: user.id,
-        id_categoria: BigInt(id_categoria),
-        id_metodo: BigInt(id_metodo),
+        id_categoria: categoriaId,
+        id_metodo: metodoId,
         estado: 'Pendiente',
       },
       include: {

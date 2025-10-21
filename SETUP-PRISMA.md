@@ -91,7 +91,7 @@ npm run dev
 ### Error: "Cannot connect to database"
 ```bash
 # Verificar que PostgreSQL esté corriendo
-# Verificar las credenciales en .env.local
+# Verificar las credenciales en .env
 # Probar conexión:
 npx prisma db pull
 ```
