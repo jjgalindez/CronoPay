@@ -2,6 +2,7 @@ import { EnvVarWarning } from "@/components/env-var-warning";
 import { AuthButton } from "@/components/auth-button";
 import { hasEnvVars } from "@/lib/utils";
 import Link from "next/link";
+import Image from "next/image";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Bell } from "lucide-react";
 
@@ -19,8 +20,17 @@ export default function Navbar({ variant = 'landing', fixed = true }: NavbarProp
   return (
     <header className={`${positionClass} w-full bg-background/70 backdrop-blur z-50 border-b border-border`}>
       <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-        <Link href="/" className="text-2xl font-bold text-lime-800">
-          Cronopay
+        <Link href="/" className="flex items-center gap-3">
+          <Image 
+            src="/assets/CronoPayLogo.svg" 
+            alt="Cronopay Logo" 
+            width={40} 
+            height={40}
+            className="w-8 h-8 md:w-10 md:h-10"
+          />
+          <span className="text-2xl font-bold text-lime-800">
+            Cronopay
+          </span>
         </Link>
 
         {isLanding ? (
