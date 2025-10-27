@@ -28,7 +28,7 @@ export default function Navbar({ variant = 'landing', fixed = true }: NavbarProp
             height={40}
             className="w-8 h-8 md:w-10 md:h-10"
           />
-          <span className="text-2xl font-bold text-lime-800">
+          <span className="text-2xl font-bold text-blue-500">
             Cronopay
           </span>
         </Link>
@@ -70,13 +70,15 @@ export default function Navbar({ variant = 'landing', fixed = true }: NavbarProp
         )}
 
         <div className="flex items-center gap-3">
-          <button
-            className="relative text-foreground hover:text-primary transition-colors"
-            aria-label="Notificaciones"
-          >
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-0 right-0 block w-2 h-2 bg-red-500 rounded-full"></span>
-          </button> 
+          {isApp && (
+            <button
+              className="relative text-foreground hover:text-primary transition-colors"
+              aria-label="Notificaciones"
+            >
+              <Bell className="w-5 h-5" />
+              <span className="absolute top-0 right-0 block w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+          )}
           <ThemeSwitcher />
           {!hasEnvVars ? <EnvVarWarning /> : <AuthButton />}
         </div>
