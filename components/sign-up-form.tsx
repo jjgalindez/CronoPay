@@ -60,30 +60,7 @@ export function SignUpForm({
       setIsLoading(false);
     }
   };
-
-  // Sign up with Google
-  async function handleSignInWithGoogle(response: any) {
-    const supabase = createClient();
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const { data, error } = await supabase.auth.signInWithIdToken({
-        provider: 'google',
-        token: response.credential,
-      });
-
-      if (error) throw error;
-
-      // Si el login es exitoso, redirigir a la página protegida
-      router.push("/dashboard");
-    } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred with Google sign-in");
-    } finally {
-      setIsLoading(false);
-    }
-  }
-  
+ 
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>

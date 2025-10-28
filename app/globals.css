@@ -15,17 +15,17 @@
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
 
-    /* Colores principales */
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
+  /* Colores principales (azul para branding e iconos) */
+  --primary: 220 60% 60%; /* azul principal igual que dark */
+  --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
     --accent: 0 0% 96.1%;
     --accent-foreground: 0 0% 9%;
 
     /* Textos y fondos */
-    --color-bg: white;
-    --color-text: black;
+  --color-bg: white;
+  --color-text: #1e293b; /* slate-800 */
     --muted-foreground: 0 0% 45.1%;
 
     /* Gráficos o data viz */
@@ -40,34 +40,34 @@
 
   /*  Modo oscuro */
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
+  --background: 220 12% 10%; /* azul muy oscuro */
+  --foreground: 0 0% 98%;
+  --card: 220 10% 12%; /* azul oscuro para cards */
+  --card-foreground: 0 0% 98%;
+  --popover: 160 10% 13%; /* verde azulado para popover */
+  --popover-foreground: 0 0% 98%;
+  --border: 220 15% 18%; /* azul para bordes */
+  --input: 160 15% 18%; /* verde para inputs */
 
-    /* Colores oscuros */
-    --primary: 260 60% 60%; /* Aqui se puede cámbiar por otro color*/
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+  /* Colores oscuros */
+  --primary: 220 60% 60%; /* azul principal */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 160 30% 18%; /* verde oscuro para secondary */
+  --secondary-foreground: 0 0% 98%;
+  --accent: 200 40% 20%; /* azul verdoso para acento */
+  --accent-foreground: 0 0% 98%;
 
-    /* Textos */
-    --color-bg: #121212;
-    --color-text: white;
-    --muted-foreground: 0 0% 60%;
+  /* Textos */
+  --color-bg: #101624; /* azul oscuro real */
+  --color-text: white;
+  --muted-foreground: 160 20% 60%; /* verde azulado para muted */
 
-    /* Colores para gráficos */
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+  /* Colores para gráficos */
+  --chart-1: 220 70% 50%; /* azul */
+  --chart-2: 160 60% 45%; /* verde */
+  --chart-3: 200 50% 40%; /* azul verdoso */
+  --chart-4: 280 65% 60%; /* violeta */
+  --chart-5: 160 40% 55%; /* verde claro */
   }
 
   * {
@@ -86,5 +86,6 @@
   .text-foreground { color: var(--color-text); }
   .text-muted { color: hsl(var(--muted-foreground)); }
   .bg-primary { background-color: hsl(var(--primary)); }
+  .text-primary { color: hsl(var(--primary)); }
   .text-primary-foreground { color: hsl(var(--primary-foreground)); }
 }

@@ -4,18 +4,17 @@ import Link from "next/link"
 
 
 export default function HeroSection() {
-  
   return (
     <>
       <div className="bg-background text-foreground">
         <main>
-          <section className="pt-32 pb-20 px-6 bg-background">
+          <section className="pt-32 pb-20 px-6 bg-gradient-to-br from-slate-800 to-slate-900">
             <div className="max-w-7xl mx-auto">
               <div className="grid lg:grid-cols-2 gap-12 items-center">
                 {/* Contenido de texto - lado izquierdo */}
                 <div className="text-center lg:text-left">
-                  <h2 className="text-5xl font-extrabold text-foreground mb-6">
-                    Gestiona tus pagos con facilidad
+                  <h2 className="text-6xl font-bold text-white mb-6">
+                    Organiza y controla tus pagos recurrentes <span className="text-green-500">fácilmente</span>
                   </h2>
                   <p className="text-lg text-muted-foreground mb-8">
                     Cronopay simplifica la administración de tus transacciones con un diseño moderno, seguro y fácil de usar.
@@ -23,13 +22,13 @@ export default function HeroSection() {
                   <div className="flex justify-center lg:justify-start gap-4">
                     <Link
                       href="/auth/sign-up"
-                      className="bg-blue-500 hover:bg-blue-400 dark:bg-blue-900 dark:hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg transition"
+                      className="bg-green-600 hover:bg-green-700 dark:bg-green-800 dark:hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-lg transition"
                     >
                       Comenzar ahora
                     </Link>
                     <a
                       href="#features"
-                      className="border border-blue-500 text-blue-500 hover:bg-blue-500/30 dark:hover:bg-blue-500/10 font-semibold px-6 py-3 rounded-lg transition"
+                      className="border border-green-500 text-green-500 hover:bg-green-500/30 dark:hover:bg-green-500/10 font-semibold px-6 py-3 rounded-lg transition"
                     >
                       Ver más
                     </a>
@@ -53,29 +52,59 @@ export default function HeroSection() {
 
           <section id="features" className="py-20 bg-card">
             <div className="max-w-6xl mx-auto px-6">
-              <h3 className="text-3xl font-bold text-center mb-14 text-foreground">
-                Características principales
+              <h3 className="text-3xl font-bold text-center mb-4 text-foreground">
+                Funcionalidades principales
               </h3>
-              <div className="grid md:grid-cols-3 gap-10">
-                <div className="p-6 rounded-2xl bg-muted hover:bg-muted/80 transition shadow-sm">
-                  <div className="text-primary text-4xl mb-4">💳</div>
-                  <h4 className="font-semibold text-xl mb-2 text-foreground">Pagos inteligentes</h4>
+              <p className="text-lg text-muted-foreground text-center mb-12">
+                Todo lo que necesitas para gestionar tus pagos recurrentes
+              </p>
+              <div className="grid md:grid-cols-4 gap-8">
+                {/* Registro de pagos */}
+                <div className="bg-muted rounded-2xl p-8 shadow-sm flex flex-col items-start">
+                  <div className="mb-4">
+                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-100">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="18" height="10" rx="3" fill="#3B82F6"/><rect x="7" y="13" width="10" height="2" rx="1" fill="#fff"/><rect x="7" y="9" width="6" height="2" rx="1" fill="#fff"/></svg>
+                    </span>
+                  </div>
+                  <h4 className="font-semibold text-xl mb-2 text-foreground">Registro de pagos</h4>
                   <p className="text-muted-foreground">
-                    Procesa y organiza tus pagos con algoritmos que optimizan tiempo y seguridad.
+                    Registra montos, fechas, categorías y métodos de pago de forma simple
                   </p>
                 </div>
-                <div className="p-6 rounded-2xl bg-muted hover:bg-muted/80 transition shadow-sm">
-                  <div className="text-primary text-4xl mb-4">📊</div>
-                  <h4 className="font-semibold text-xl mb-2 text-foreground">Reportes detallados</h4>
+                {/* Recordatorios */}
+                <div className="bg-muted rounded-2xl p-8 shadow-sm flex flex-col items-start">
+                  <div className="mb-4">
+                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-green-100">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="6" y="6" width="12" height="12" rx="6" fill="#22C55E"/><path d="M12 10v2.5" stroke="#fff" strokeWidth="2" strokeLinecap="round"/><circle cx="12" cy="16" r="1" fill="#fff"/></svg>
+                    </span>
+                  </div>
+                  <h4 className="font-semibold text-xl mb-2 text-foreground">Recordatorios</h4>
                   <p className="text-muted-foreground">
-                    Accede a estadísticas visuales de tus ingresos, gastos y flujo de efectivo.
+                    Recibe alertas automáticas antes del vencimiento de cada pago
                   </p>
                 </div>
-                <div className="p-6 rounded-2xl bg-muted hover:bg-muted/80 transition shadow-sm">
-                  <div className="text-primary text-4xl mb-4">🔒</div>
-                  <h4 className="font-semibold text-xl mb-2 text-foreground">Seguridad avanzada</h4>
+                {/* Panel de estadísticas */}
+                <div className="bg-muted rounded-2xl p-8 shadow-sm flex flex-col items-start">
+                  <div className="mb-4">
+                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-purple-100">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="4" y="10" width="4" height="8" rx="2" fill="#A78BFA"/><rect x="10" y="6" width="4" height="12" rx="2" fill="#A78BFA"/><rect x="16" y="13" width="4" height="5" rx="2" fill="#A78BFA"/><rect x="4" y="10" width="4" height="8" rx="2" fill="#fff" fillOpacity=".5"/><rect x="10" y="6" width="4" height="12" rx="2" fill="#fff" fillOpacity=".5"/><rect x="16" y="13" width="4" height="5" rx="2" fill="#fff" fillOpacity=".5"/></svg>
+                    </span>
+                  </div>
+                  <h4 className="font-semibold text-xl mb-2 text-foreground">Panel de estadísticas</h4>
                   <p className="text-muted-foreground">
-                    Tu información está protegida con cifrado de nivel bancario.
+                    Visualiza historial y próximos pagos con gráficos claros
+                  </p>
+                </div>
+                {/* Vista de calendario */}
+                <div className="bg-muted rounded-2xl p-8 shadow-sm flex flex-col items-start">
+                  <div className="mb-4">
+                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-orange-100">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="4" y="6" width="16" height="14" rx="4" fill="#F59E42"/><rect x="7" y="10" width="2" height="2" rx="1" fill="#fff"/><rect x="11" y="10" width="2" height="2" rx="1" fill="#fff"/><rect x="15" y="10" width="2" height="2" rx="1" fill="#fff"/></svg>
+                    </span>
+                  </div>
+                  <h4 className="font-semibold text-xl mb-2 text-foreground">Vista de calendario</h4>
+                  <p className="text-muted-foreground">
+                    Organiza pagos en calendario y genera reportes mensuales
                   </p>
                 </div>
               </div>
@@ -139,54 +168,91 @@ export default function HeroSection() {
 
           {/* Testimonials/Benefits Section */}
           <section id="benefits" className="py-20 bg-background">
-            <div className="max-w-6xl mx-auto px-6 text-center">
-              <h3 className="text-3xl font-bold mb-12 text-foreground">
+            <div className="max-w-6xl mx-auto px-6">
+              <h3 className="text-3xl font-bold mb-12 text-foreground text-center">
                 Confianza de nuestros usuarios
               </h3>
               <div className="grid md:grid-cols-3 gap-8">
-                <div className="bg-card rounded-2xl shadow-md p-6 hover:shadow-lg transition border border-border">
-                  <p className="text-muted-foreground italic mb-6">
-                    Cronopay me ha ahorrado horas en la gestión de pagos mensuales.
-                  </p>
-                  <div className="flex items-center justify-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-muted border-2 border-primary/20 overflow-hidden">
-                      <img
-                        src="https://img.freepik.com/fotos-gratis/mulher-tenra-com-cor-de-sobrancelha-adicionada-as-sobrancelhas_231208-3536.jpg"
-                        alt="Laura G."
-                        className="w-full h-full object-cover"
-                      />
+                {/* Testimonio tipo X/Twitter */}
+                <div className="bg-card rounded-2xl shadow-md p-0 hover:shadow-lg transition border border-border flex flex-col">
+                  <div className="flex items-center gap-3 px-6 pt-6">
+                    <img
+                      src="https://img.freepik.com/fotos-gratis/mulher-tenra-com-cor-de-sobrancelha-adicionada-as-sobrancelhas_231208-3536.jpg"
+                      alt="Laura González"
+                      className="w-12 h-12 rounded-full object-cover border border-primary/30"
+                    />
+                    <div>
+                      <span className="font-semibold text-foreground block leading-tight">Laura González</span>
+                      <span className="text-muted-foreground text-sm">@lauragonzalez · 27 oct</span>
                     </div>
-                    <p className="font-semibold text-primary">Laura G.</p>
+                  </div>
+                  <div className="px-6 py-4">
+                    <p className="text-foreground text-base mb-2">Cronopay me ha ahorrado horas en la gestión de pagos mensuales.</p>
+                    <div className="flex gap-4 text-muted-foreground text-sm mt-4">
+                      <span className="flex items-center gap-1">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" className="inline-block"><path d="M2.5 10a7.5 7.5 0 1115 0A7.5 7.5 0 012.5 10zm5.833-2.083a1.25 1.25 0 100 2.5h3.334a1.25 1.25 0 100-2.5H8.333z" stroke="currentColor" strokeWidth="1.5"/></svg> 12
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" className="inline-block"><path d="M4.167 10.833V7.5a5.833 5.833 0 0111.666 0v3.333M5.833 14.167l-1.666-1.667 1.666-1.667M14.167 14.167l1.666-1.667-1.666-1.667" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> 8
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" className="inline-block"><path d="M10 17.5l-1.45-1.32C4.4 12.36 2 10.28 2 7.5A4.5 4.5 0 016.5 3a4.5 4.5 0 013.5 2.09A4.5 4.5 0 0117.5 7.5c0 2.78-2.4 4.86-6.55 8.68L10 17.5z" stroke="currentColor" strokeWidth="1.5"/></svg> 34
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div className="bg-card rounded-2xl shadow-md p-6 hover:shadow-lg transition border border-border">
-                  <p className="text-muted-foreground italic mb-6">
-                    Una plataforma moderna y fácil de entender incluso para mi equipo.
-                  </p>
-                  <div className="flex items-center justify-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-muted border-2 border-primary/20 overflow-hidden">
-                      <img
-                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
-                        alt="Andrés P."
-                        className="w-full h-full object-cover"
-                      />
+                <div className="bg-card rounded-2xl shadow-md p-0 hover:shadow-lg transition border border-border flex flex-col">
+                  <div className="flex items-center gap-3 px-6 pt-6">
+                    <img
+                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+                      alt="Andrés Ruiz"
+                      className="w-12 h-12 rounded-full object-cover border border-primary/30"
+                    />
+                    <div>
+                      <span className="font-semibold text-foreground block leading-tight">Andrés Ruiz</span>
+                      <span className="text-muted-foreground text-sm">@andresruiz · 25 oct</span>
                     </div>
-                    <p className="font-semibold text-primary">Andrés P.</p>
+                  </div>
+                  <div className="px-6 py-4">
+                    <p className="text-foreground text-base mb-2">Una plataforma moderna y fácil de entender incluso para mi equipo.</p>
+                    <div className="flex gap-4 text-muted-foreground text-sm mt-4">
+                      <span className="flex items-center gap-1">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" className="inline-block"><path d="M2.5 10a7.5 7.5 0 1115 0A7.5 7.5 0 012.5 10zm5.833-2.083a1.25 1.25 0 100 2.5h3.334a1.25 1.25 0 100-2.5H8.333z" stroke="currentColor" strokeWidth="1.5"/></svg> 7
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" className="inline-block"><path d="M4.167 10.833V7.5a5.833 5.833 0 0111.666 0v3.333M5.833 14.167l-1.666-1.667 1.666-1.667M14.167 14.167l1.666-1.667-1.666-1.667" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> 5
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" className="inline-block"><path d="M10 17.5l-1.45-1.32C4.4 12.36 2 10.28 2 7.5A4.5 4.5 0 016.5 3a4.5 4.5 0 013.5 2.09A4.5 4.5 0 0117.5 7.5c0 2.78-2.4 4.86-6.55 8.68L10 17.5z" stroke="currentColor" strokeWidth="1.5"/></svg> 21
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div className="bg-card rounded-2xl shadow-md p-6 hover:shadow-lg transition border border-border">
-                  <p className="text-muted-foreground italic mb-6">
-                    Desde que uso Cronopay, el seguimiento de mis finanzas es mucho más claro.
-                  </p>
-                  <div className="flex items-center justify-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-muted border-2 border-primary/20 overflow-hidden">
-                      <img
-                        src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
-                        alt="Camila R."
-                        className="w-full h-full object-cover"
-                      />
+                <div className="bg-card rounded-2xl shadow-md p-0 hover:shadow-lg transition border border-border flex flex-col">
+                  <div className="flex items-center gap-3 px-6 pt-6">
+                    <img
+                      src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+                      alt="Camila López"
+                      className="w-12 h-12 rounded-full object-cover border border-primary/30"
+                    />
+                    <div>
+                      <span className="font-semibold text-foreground block leading-tight">Camila López</span>
+                      <span className="text-muted-foreground text-sm">@camilalopez · 22 oct</span>
                     </div>
-                    <p className="font-semibold text-primary">Camila R.</p>
+                  </div>
+                  <div className="px-6 py-4">
+                    <p className="text-foreground text-base mb-2">Desde que uso Cronopay, el seguimiento de mis finanzas es mucho más claro.</p>
+                    <div className="flex gap-4 text-muted-foreground text-sm mt-4">
+                      <span className="flex items-center gap-1">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" className="inline-block"><path d="M2.5 10a7.5 7.5 0 1115 0A7.5 7.5 0 012.5 10zm5.833-2.083a1.25 1.25 0 100 2.5h3.334a1.25 1.25 0 100-2.5H8.333z" stroke="currentColor" strokeWidth="1.5"/></svg> 9
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" className="inline-block"><path d="M4.167 10.833V7.5a5.833 5.833 0 0111.666 0v3.333M5.833 14.167l-1.666-1.667 1.666-1.667M14.167 14.167l1.666-1.667-1.666-1.667" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> 6
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" className="inline-block"><path d="M10 17.5l-1.45-1.32C4.4 12.36 2 10.28 2 7.5A4.5 4.5 0 016.5 3a4.5 4.5 0 013.5 2.09A4.5 4.5 0 0117.5 7.5c0 2.78-2.4 4.86-6.55 8.68L10 17.5z" stroke="currentColor" strokeWidth="1.5"/></svg> 27
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>

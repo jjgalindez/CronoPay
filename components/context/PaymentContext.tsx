@@ -94,7 +94,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
       
       const data = await response.json();
       
-      // Convert date strings to Date objects and update status
+      // Conversion de fechas y estados
       const processedPayments = (data.pagos || []).map((pago: any) => ({
         id: parseInt(pago.id_pago),
         titulo: pago.titulo,
@@ -116,19 +116,19 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Determine payment status based on due date
+  // Determina el estado del pago basado en la fecha de vencimiento
   const determinePaymentStatus = (dueDate: Date, currentStatus?: string): 'Pendiente' | 'Pagado' | 'Vencido' => {
-    // If already paid, keep that status
+    // Si ya está pagado, mantener ese estado
     if (currentStatus === 'Pagado') return 'Pagado';
 
-    // If the due date is in the past, mark as 'Vencido'
+    // Si la fecha de vencimiento está en el pasado, marcar como 'Vencido'
     if (dueDate < new Date()) return 'Vencido';
 
-    // Since the database only allows 'Pendiente' and 'Pagado', we always return 'Pendiente' for unpaid items
+    // Dado que la base de datos solo permite 'Pendiente' y 'Pagado', siempre devolvemos 'Pendiente' para los elementos no pagados
     return 'Pendiente';
   };
 
-  // Calculate metrics
+  // Calcular metricas
   const calculateMetrics = (): PaymentMetrics => {
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
@@ -144,7 +144,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     const cantidadPagos = pagos.length;
     const promedioMonto = cantidadPagos > 0 ? totalMes / pagosMesActual.length : 0;
 
-    // Most used category
+    // Categoría más utilizada
     const categoriaCount = pagos.reduce((acc, pago) => {
       acc[pago.categoria] = (acc[pago.categoria] || 0) + pago.monto;
       return acc;
@@ -153,7 +153,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     const categoriaConMasGastos = Object.entries(categoriaCount)
       .sort(([, a], [, b]) => b - a)[0]?.[0] || 'N/A';
 
-    // Most used payment method
+    // Método de pago más utilizado
     const metodoCount = pagos.reduce((acc, pago) => {
       acc[pago.metodo_pago] = (acc[pago.metodo_pago] || 0) + 1;
       return acc;
@@ -173,7 +173,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     };
   };
 
-  // Calculate upcoming payments
+  // Calcular pagos próximos
   const calculateUpcomingPayments = (): UpcomingPayment[] => {
     const today = new Date();
     const next30Days = new Date();
@@ -203,7 +203,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
       .sort((a, b) => a.diasRestantes - b.diasRestantes);
   };
 
-  // Calculate calendar reminders
+  // Calcular recordatorios de calendario
   const calculateCalendarReminders = (): CalendarReminder[] => {
     const reminderMap = new Map<string, CalendarReminder>();
 
@@ -343,7 +343,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     fetchPayments();
   }, []);
 
-  // Calculate derived data
+  // Calcular datos derivados
   const metrics = calculateMetrics();
   const upcomingPayments = calculateUpcomingPayments();
   const calendarReminders = calculateCalendarReminders();
