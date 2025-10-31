@@ -14,7 +14,7 @@ export async function AuthButton() {
   return user ? (
     <UserDropdown user={user} />
   ) : (
-    <div className="flex gap-2">
+    <div className="flex items-center gap-3">
       <Button asChild size="sm" variant={"outline"}>
         <Link href="/auth/login">Iniciar Sesion</Link>
       </Button>
