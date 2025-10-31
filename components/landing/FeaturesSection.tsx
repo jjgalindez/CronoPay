@@ -1,3 +1,5 @@
+import { Card } from "../ui/card";
+
 export default function FeaturesSection() {
   return (
     <section id="features" className="py-20 bg-card">
@@ -21,6 +23,7 @@ export default function FeaturesSection() {
               Registra montos, fechas, categorías y métodos de pago de forma simple
             </p>
           </div>
+          {/* <Card  /> Reutilizar */}
           {/* Recordatorios */}
           <div className="bg-muted rounded-2xl p-8 shadow-sm flex flex-col items-start">
             <div className="mb-4">

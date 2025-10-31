@@ -66,8 +66,8 @@ export function SignUpForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Sign up</CardTitle>
-          <CardDescription>Create a new account</CardDescription>
+          <CardTitle className="text-2xl">Registro</CardTitle>
+          <CardDescription>Crear una nueva cuenta</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp}>
@@ -120,12 +120,12 @@ export function SignUpForm({
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating an account..." : "Sign up"}
+                {isLoading ? "Creando cuenta..." : "Crear cuenta"}
               </Button>
             </div>
             <div className="my-4 flex items-center gap-2">
               <span className="h-px flex-1 bg-gray-200"></span>
-              <span className="text-sm text-gray-500">Or continue with</span>
+              <span className="text-sm text-gray-500">O continúa con</span>
               <span className="h-px flex-1 bg-gray-200"></span>
             </div>
             <GoogleSignUp buttonText="Registrarse con Google" redirectTo="/protected" />

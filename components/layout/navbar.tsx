@@ -24,9 +24,9 @@ export default function Navbar({ variant = 'landing', fixed = true }: NavbarProp
           <Image 
             src="/assets/CronoPayLogo.svg" 
             alt="Cronopay Logo" 
-            width={40} 
-            height={40}
-            className="w-8 h-8 md:w-10 md:h-10"
+            width={48} 
+            height={48}
+            className="w-10 h-10 md:w-12 md:h-12"
           />
           <span className="text-2xl font-bold text-blue-500">
             𝙲𝚛𝚘𝚗𝚘𝙿𝚊𝚢
