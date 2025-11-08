@@ -1,15 +1,11 @@
 "use client";
 
-import { Calendar, CreditCard, Tag, DollarSign, MoreHorizontal, CheckCircle, Trash2 } from 'lucide-react';
+import { Calendar, CreditCard, Tag, Trash2 } from 'lucide-react';
 import { PaymentStatusBadge } from './PaymentStatusBadge';
 import { usePayments } from '@/components/context/PaymentContext';
 import { Button } from '@/components/ui/button';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Label } from '@/components/ui/label';
+import { useState } from 'react';
 
 interface PaymentListDataProps {
   refreshKey?: number;
@@ -17,6 +13,7 @@ interface PaymentListDataProps {
 
 export default function PaymentListData({ refreshKey }: PaymentListDataProps) {
   const { pagos, loading, error, markAsPaid, deletePayment } = usePayments();
+  const [togglingPayment, setTogglingPayment] = useState<number | null>(null);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-CO', {
@@ -55,11 +52,19 @@ export default function PaymentListData({ refreshKey }: PaymentListDataProps) {
     }
   };
 
-  const handleMarkAsPaid = async (id: number) => {
+  const handleTogglePaid = async (id: number, currentStatus: string) => {
+    if (currentStatus === 'Pagado') {
+      // No permitir cambiar de pagado a pendiente
+      return;
+    }
+    
+    setTogglingPayment(id);
     try {
       await markAsPaid(id);
     } catch (error) {
       console.error('Error al marcar como pagado:', error);
+    } finally {
+      setTogglingPayment(null);
     }
   };
 
@@ -143,8 +148,36 @@ export default function PaymentListData({ refreshKey }: PaymentListDataProps) {
                   <h3 className="font-semibold text-foreground text-lg">
                     {pago.titulo}
                   </h3>
-                  <div className="mt-1">
+                  <div className="mt-1 flex items-center gap-3">
                     <PaymentStatusBadge status={pago.estado} />
+                    
+                    {/* Toggle para marcar como pagado */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleTogglePaid(pago.id, pago.estado)}
+                        disabled={pago.estado === 'Pagado' || togglingPayment === pago.id}
+                        className={`
+                          relative inline-flex h-6 w-11 items-center rounded-full transition-colors
+                          ${pago.estado === 'Pagado' 
+                            ? 'bg-green-600 cursor-default' 
+                            : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 cursor-pointer'
+                          }
+                          ${togglingPayment === pago.id ? 'opacity-50 cursor-wait' : ''}
+                          disabled:cursor-not-allowed disabled:opacity-50
+                        `}
+                        title={pago.estado === 'Pagado' ? 'Pagado' : 'Marcar como pagado'}
+                      >
+                        <span
+                          className={`
+                            inline-block h-4 w-4 transform rounded-full bg-white transition-transform
+                            ${pago.estado === 'Pagado' ? 'translate-x-6' : 'translate-x-1'}
+                          `}
+                        />
+                      </button>
+                      <Label className="text-xs text-muted-foreground cursor-pointer">
+                        {pago.estado === 'Pagado' ? 'Pagado' : 'Pendiente'}
+                      </Label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -176,32 +209,16 @@ export default function PaymentListData({ refreshKey }: PaymentListDataProps) {
                 </div>
               </div>
               
-              {/* Menú de acciones */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {pago.estado === 'Pendiente' && (
-                    <DropdownMenuItem 
-                      onClick={() => handleMarkAsPaid(pago.id)}
-                      className="text-green-600"
-                    >
-                      <CheckCircle className="mr-2 h-4 w-4" />
-                      Marcar como pagado
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem 
-                    onClick={() => handleDelete(pago.id)}
-                    className="text-red-600"
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Eliminar
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {/* Botón eliminar */}
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                onClick={() => handleDelete(pago.id)}
+                title="Eliminar pago"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </div>

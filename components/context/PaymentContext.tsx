@@ -121,10 +121,17 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     // Si ya está pagado, mantener ese estado
     if (currentStatus === 'Pagado') return 'Pagado';
 
-    // Si la fecha de vencimiento está en el pasado, marcar como 'Vencido'
-    if (dueDate < new Date()) return 'Vencido';
+    // Normalizar las fechas para comparación (sin horas)
+    const dueDateNormalized = new Date(dueDate);
+    dueDateNormalized.setHours(0, 0, 0, 0);
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    // Dado que la base de datos solo permite 'Pendiente' y 'Pagado', siempre devolvemos 'Pendiente' para los elementos no pagados
+    // Si la fecha de vencimiento es anterior a hoy, marcar como 'Vencido'
+    if (dueDateNormalized < today) return 'Vencido';
+
+    // Si no está pagado y no está vencido, es 'Pendiente'
     return 'Pendiente';
   };
 
@@ -133,14 +140,14 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
     
-    const pagosMesActual = pagos.filter(pago => {
+    const pagosMesActual = pagos.filter((pago) => {
       const pagoDate = pago.fecha_vencimiento;
       return pagoDate.getMonth() === currentMonth && pagoDate.getFullYear() === currentYear;
     });
 
     const totalMes = pagosMesActual.reduce((sum, pago) => sum + pago.monto, 0);
-    const totalPendiente = pagos.filter(p => p.estado === 'Pendiente').reduce((sum, pago) => sum + pago.monto, 0);
-    const totalPagado = pagos.filter(p => p.estado === 'Pagado').reduce((sum, pago) => sum + pago.monto, 0);
+    const totalPendiente = pagos.filter((p) => p.estado === 'Pendiente' || p.estado === 'Vencido').reduce((sum, pago) => sum + pago.monto, 0);
+    const totalPagado = pagos.filter((p) => p.estado === 'Pagado').reduce((sum, pago) => sum + pago.monto, 0);
     const cantidadPagos = pagos.length;
     const promedioMonto = cantidadPagos > 0 ? totalMes / pagosMesActual.length : 0;
 
@@ -176,18 +183,22 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
   // Calcular pagos próximos
   const calculateUpcomingPayments = (): UpcomingPayment[] => {
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const next30Days = new Date();
     next30Days.setDate(today.getDate() + 30);
+    next30Days.setHours(23, 59, 59, 999);
 
     return pagos
-      .filter(pago => 
-        pago.estado === 'Pendiente' && 
-        pago.fecha_vencimiento >= today && 
+      .filter((pago) => 
+        (pago.estado === 'Pendiente' || pago.estado === 'Vencido') && 
         pago.fecha_vencimiento <= next30Days
       )
-      .map(pago => {
+      .map((pago) => {
+        const pagoDate = new Date(pago.fecha_vencimiento);
+        pagoDate.setHours(0, 0, 0, 0);
+        
         const diasRestantes = Math.ceil(
-          (pago.fecha_vencimiento.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+          (pagoDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
         );
         
         return {
@@ -197,7 +208,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
           fecha_vencimiento: pago.fecha_vencimiento,
           categoria: pago.categoria,
           diasRestantes,
-          esUrgente: diasRestantes <= 7
+          esUrgente: diasRestantes <= 7 || diasRestantes < 0
         };
       })
       .sort((a, b) => a.diasRestantes - b.diasRestantes);
@@ -208,8 +219,8 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     const reminderMap = new Map<string, CalendarReminder>();
 
     pagos
-      .filter(pago => pago.estado === 'Pendiente')
-      .forEach(pago => {
+      .filter((pago) => pago.estado === 'Pendiente' || pago.estado === 'Vencido')
+      .forEach((pago) => {
         const dateKey = pago.fecha_vencimiento.toDateString();
         
         if (!reminderMap.has(dateKey)) {

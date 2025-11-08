@@ -29,18 +29,36 @@ export default function PaymentCalendarReminders() {
 
   const isToday = (date: Date) => {
     const today = new Date();
-    return date.toDateString() === today.toDateString();
+    today.setHours(0, 0, 0, 0);
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+    return compareDate.getTime() === today.getTime();
+  };
+
+  const isPastDue = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+    return compareDate < today;
   };
 
   const isThisWeek = (date: Date) => {
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const oneWeek = new Date();
     oneWeek.setDate(today.getDate() + 7);
+    oneWeek.setHours(0, 0, 0, 0);
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
     
-    return date >= today && date <= oneWeek;
+    return compareDate >= today && compareDate <= oneWeek;
   };
 
   const getCardStyle = (date: Date) => {
+    if (isPastDue(date)) {
+      return 'border-red-500 bg-red-50 dark:border-red-400 dark:bg-red-900/20';
+    }
     if (isToday(date)) {
       return 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20';
     }
@@ -52,13 +70,17 @@ export default function PaymentCalendarReminders() {
 
   const getDaysBadge = (date: Date) => {
     const today = new Date();
-    const diffTime = date.getTime() - today.getTime();
+    today.setHours(0, 0, 0, 0);
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+    const diffTime = compareDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
+    if (diffDays < 0) return { text: `Vencido hace ${Math.abs(diffDays)} día${Math.abs(diffDays) !== 1 ? 's' : ''}`, variant: 'destructive' as const };
     if (diffDays === 0) return { text: 'Hoy', variant: 'destructive' as const };
     if (diffDays === 1) return { text: 'Mañana', variant: 'outline' as const };
-    if (diffDays <= 7) return { text: `${diffDays} días`, variant: 'secondary' as const };
-    return { text: `${diffDays} días`, variant: 'outline' as const };
+    if (diffDays <= 7) return { text: `En ${diffDays} días`, variant: 'secondary' as const };
+    return { text: `En ${diffDays} días`, variant: 'outline' as const };
   };
 
   if (calendarReminders.length === 0) {

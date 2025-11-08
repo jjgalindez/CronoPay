@@ -94,29 +94,37 @@ export function PaymentCalendar() {
             return <div key={`empty-${index}`} className="p-2"></div>;
           }
           
-          const isToday = day === today;
+          const isToday = day === today && month === currentDate.getMonth() && year === currentDate.getFullYear();
           const dayPayments = paymentDaysByDate[day] || [];
           const hasPayments = dayPayments.length > 0;
           
-          // Contar pagos por estado
-          const pendingPayments = dayPayments.filter(p => p.estado === 'Pendiente');
-          const paidPayments = dayPayments.filter(p => p.estado === 'Pagado');
+          // Contar pagos por estado (el contexto ya asigna 'Vencido' automáticamente)
+          const pendingPayments = dayPayments.filter((p) => p.estado === 'Pendiente');
+          const vencidoPayments = dayPayments.filter((p) => p.estado === 'Vencido');
+          const paidPayments = dayPayments.filter((p) => p.estado === 'Pagado');
           
-          
-          // Determinar color basado en estado y si es vencido
-          const isPastDue = new Date(year, month, day) < new Date() && pendingPayments.length > 0;
+          // Determinar si es vencido: fecha del día es ANTERIOR a hoy (sin incluir hoy)
+          const dayDate = new Date(year, month, day);
+          dayDate.setHours(0, 0, 0, 0);
+          const todayDate = new Date();
+          todayDate.setHours(0, 0, 0, 0);
+          const isPastDue = vencidoPayments.length > 0;
           
           let dayStyle = 'hover:bg-gray-100 dark:hover:bg-gray-800';
           
           if (isToday) {
+            // Hoy tiene prioridad visual
             dayStyle = 'bg-blue-500 text-white font-bold';
           } else if (hasPayments) {
             if (isPastDue) {
-              dayStyle = 'bg-red-500 text-white font-medium'; // Vencidos
+              // Vencidos: rojo intenso
+              dayStyle = 'bg-red-500 text-white font-medium';
             } else if (pendingPayments.length > 0) {
-              dayStyle = 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 font-medium'; // Pendientes
+              // Pendientes futuros: naranja
+              dayStyle = 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 font-medium';
             } else {
-              dayStyle = 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-medium'; // Pagados
+              // Todos pagados: verde
+              dayStyle = 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-medium';
             }
           }
           
@@ -128,13 +136,18 @@ export function PaymentCalendar() {
                 ${dayStyle}
               `}
               title={hasPayments ? 
-                `${dayPayments.length} pago(s): ${dayPayments.map(p => p.titulo).join(', ')}` : 
+                dayPayments.map((p) => 
+                  `${p.titulo} - $${p.monto.toLocaleString()} (${p.estado})`
+                ).join('\n') : 
                 ''
               }
             >
               <div>{day}</div>
               {hasPayments && (
                 <div className="flex justify-center mt-0.5 gap-0.5">
+                  {vencidoPayments.length > 0 && (
+                    <div className="w-1.5 h-1.5 bg-current rounded-full opacity-90"></div>
+                  )}
                   {pendingPayments.length > 0 && (
                     <div className="w-1.5 h-1.5 bg-current rounded-full opacity-70"></div>
                   )}
@@ -178,22 +191,28 @@ export function PaymentCalendar() {
       {paymentsThisMonth.length > 0 && (
         <div className="mt-4 pt-4 border-t border-border">
           <h4 className="font-medium text-sm mb-2 text-foreground">Resumen del mes:</h4>
-          <div className="grid grid-cols-3 gap-2 text-xs">
-            <div className="text-center">
-              <div className="font-medium text-orange-600 dark:text-orange-400">
-                {paymentsThisMonth.filter(p => p.estado === 'Pendiente').length}
+          <div className="grid grid-cols-2 gap-3 text-xs">
+            <div className="bg-orange-50 dark:bg-orange-900/20 p-2 rounded">
+              <div className="font-medium text-orange-600 dark:text-orange-400 text-base">
+                {paymentsThisMonth.filter((p) => p.estado === 'Pendiente').length}
               </div>
               <div className="text-muted-foreground">Pendientes</div>
             </div>
-            <div className="text-center">
-              <div className="font-medium text-green-600 dark:text-green-400">
-                {paymentsThisMonth.filter(p => p.estado === 'Pagado').length}
+            <div className="bg-red-50 dark:bg-red-900/20 p-2 rounded">
+              <div className="font-medium text-red-600 dark:text-red-400 text-base">
+                {paymentsThisMonth.filter((p) => p.estado === 'Vencido').length}
+              </div>
+              <div className="text-muted-foreground">Vencidos</div>
+            </div>
+            <div className="bg-green-50 dark:bg-green-900/20 p-2 rounded">
+              <div className="font-medium text-green-600 dark:text-green-400 text-base">
+                {paymentsThisMonth.filter((p) => p.estado === 'Pagado').length}
               </div>
               <div className="text-muted-foreground">Pagados</div>
             </div>
-            <div className="text-center">
-              <div className="font-medium text-foreground">
-                ${paymentsThisMonth.reduce((sum, p) => sum + p.monto, 0).toLocaleString()}
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
+              <div className="font-medium text-foreground text-base">
+                ${paymentsThisMonth.reduce((sum, p) => sum + p.monto, 0).toLocaleString('es-CO')}
               </div>
               <div className="text-muted-foreground">Total</div>
             </div>

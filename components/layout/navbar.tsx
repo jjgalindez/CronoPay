@@ -4,7 +4,7 @@ import { hasEnvVars } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { Bell } from "lucide-react";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 interface NavbarProps {
   variant?: 'landing' | 'app' | 'minimal';
@@ -49,8 +49,8 @@ export default function Navbar({ variant = 'landing', fixed = true }: NavbarProp
               </Link>
             </li>
             <li>
-              <Link href="/funcionalidades" className="text-foreground hover:text-primary transition">
-                Funcionalidades
+              <Link href="/protected/calendar" className="text-foreground hover:text-primary transition">
+                Calendario
               </Link>
             </li>
             <li>
@@ -59,7 +59,7 @@ export default function Navbar({ variant = 'landing', fixed = true }: NavbarProp
               </Link>
             </li>
             <li>
-              <Link href="/reportes" className="text-foreground hover:text-primary transition">
+              <Link href="/protected/reports" className="text-foreground hover:text-primary transition">
                 Reportes
               </Link>
             </li>
@@ -70,15 +70,7 @@ export default function Navbar({ variant = 'landing', fixed = true }: NavbarProp
         )}
 
         <div className="flex items-center gap-3">
-          {isApp && (
-            <button
-              className="relative text-foreground hover:text-primary transition-colors"
-              aria-label="Notificaciones"
-            >
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-0 right-0 block w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
-          )}
+          {isApp && <NotificationBell />}
           <ThemeSwitcher />
           {!hasEnvVars ? <EnvVarWarning /> : <AuthButton />}
         </div>
