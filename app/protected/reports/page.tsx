@@ -12,7 +12,7 @@ import {
   AlertCircle,
   DollarSign,
   FileDown,
-  Mail,
+  Mail, 
   FileSpreadsheet,
   RefreshCw,
 } from "lucide-react";

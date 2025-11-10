@@ -19,8 +19,14 @@ export function UserDropdown({ user }: UserDropdownProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const userName = user.user_metadata.full_name || user.email || "Usuario";
-  const userAvatar = user.user_metadata.avatar_url || 
-    "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541";
+  const placeholderAvatar = "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541";
+  const rawAvatar = user.user_metadata.avatar_url || placeholderAvatar;
+  const [avatarSrc, setAvatarSrc] = useState(rawAvatar);
+  const isGoogleAvatar = avatarSrc.includes("googleusercontent.com");
+
+  useEffect(() => {
+    setAvatarSrc(rawAvatar);
+  }, [rawAvatar]);
 
   // Cerrar dropdown cuando se hace click fuera
   useEffect(() => {
@@ -45,9 +51,12 @@ export function UserDropdown({ user }: UserDropdownProps) {
       >
         {/* Avatar */}
         <img
-          src={userAvatar}
+          src={avatarSrc}
           alt={userName}
           className="w-8 h-8 rounded-full border-2 border-primary/20"
+          loading="lazy"
+          referrerPolicy={isGoogleAvatar ? "no-referrer" : undefined}
+          onError={() => setAvatarSrc(placeholderAvatar)}
         />
         
         {/* Nombre */}
@@ -73,9 +82,12 @@ export function UserDropdown({ user }: UserDropdownProps) {
           <div className="px-4 py-3 border-b border-border">
             <div className="flex items-center gap-3">
               <img
-                src={userAvatar}
+                src={avatarSrc}
                 alt={userName}
                 className="w-10 h-10 rounded-full border-2 border-primary/20"
+                loading="lazy"
+                referrerPolicy={isGoogleAvatar ? "no-referrer" : undefined}
+                onError={() => setAvatarSrc(placeholderAvatar)}
               />
               <div>
                 <p className="text-sm font-medium text-foreground">{userName}</p>

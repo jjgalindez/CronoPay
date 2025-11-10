@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 
 export function AuthButtonClient() {
   const [user, setUser] = useState<any>(null);
+  const placeholderAvatar = "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png";
+  const [avatarSrc, setAvatarSrc] = useState<string>(placeholderAvatar);
   const supabase = createClient();
   const router = useRouter();
 
@@ -26,6 +28,16 @@ export function AuthButtonClient() {
 
     return () => subscription.unsubscribe();
   }, [supabase]);
+
+  useEffect(() => {
+    if (user?.user_metadata?.avatar_url) {
+      setAvatarSrc(user.user_metadata.avatar_url);
+    } else {
+      setAvatarSrc(placeholderAvatar);
+    }
+  }, [user]);
+
+  const isGoogleAvatar = avatarSrc.includes("googleusercontent.com");
 
   if (!user) {
     return (
@@ -46,12 +58,12 @@ export function AuthButtonClient() {
         {user.user_metadata.full_name || user.email}
       </span>
       <img
-        src={
-          user.user_metadata.avatar_url ||
-          "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
-        }
+        src={avatarSrc}
         alt="Avatar"
         className="w-8 h-8 rounded-full"
+        loading="lazy"
+        referrerPolicy={isGoogleAvatar ? "no-referrer" : undefined}
+        onError={() => setAvatarSrc(placeholderAvatar)}
       />
       <Button
         size="sm"

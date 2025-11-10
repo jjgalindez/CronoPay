@@ -50,6 +50,8 @@ export function ProfileForm({ profile }: ProfileFormProps) {
     avatar_url: profile.avatar_url
   });
 
+  const isGoogleAvatar = formData.avatar_url?.includes("googleusercontent.com");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -228,7 +230,8 @@ export function ProfileForm({ profile }: ProfileFormProps) {
                   alt="Avatar"
                   fill
                   className="object-cover"
-                  unoptimized
+                  unoptimized={isGoogleAvatar}
+                  referrerPolicy={isGoogleAvatar ? "no-referrer" : undefined}
                 />
               </div>
               <h3 className="mt-4 text-xl font-semibold">{formData.nombre || 'Usuario'}</h3>
@@ -363,7 +366,8 @@ export function ProfileForm({ profile }: ProfileFormProps) {
                         alt="Avatar"
                         fill
                         className="object-cover"
-                        unoptimized
+                        unoptimized={isGoogleAvatar}
+                        referrerPolicy={isGoogleAvatar ? "no-referrer" : undefined}
                       />
                       {uploadingImage && (
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">

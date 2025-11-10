@@ -62,6 +62,8 @@ export default async function UserProfilePage({ params }: PageProps) {
     notFound()
   }
 
+  const isGoogleAvatar = user.avatar_url?.includes('googleusercontent.com')
+
   // Calcular estadísticas públicas
   const totalPagos = user.pago.length
   const pagosPagados = user.pago.filter((p) => p.estado === 'Pagado').length
@@ -84,6 +86,8 @@ export default async function UserProfilePage({ params }: PageProps) {
                       alt={user.nombre || 'Usuario'}
                       fill
                       className="object-cover"
+                      unoptimized={isGoogleAvatar}
+                      referrerPolicy={isGoogleAvatar ? 'no-referrer' : undefined}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
