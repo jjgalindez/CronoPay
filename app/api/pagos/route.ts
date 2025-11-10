@@ -3,7 +3,6 @@ import { createClient } from '@/lib/supabase/server';
 import { PrismaClient } from '@/lib/generated/prisma';
 
 const prisma = new PrismaClient();
-
 // Helper function para convertir BigInt a string
 function serializePago(pago: any) {
   return {
