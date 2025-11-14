@@ -40,27 +40,27 @@
 
   /*  Modo oscuro */
   .dark {
-  --background: 220 12% 10%; /* azul muy oscuro */
+  --background: 220 15% 12%; /* azul oscuro base */
   --foreground: 0 0% 98%;
-  --card: 220 10% 12%; /* azul oscuro para cards */
+  --card: 220 15% 14%; /* azul oscuro para cards (sutil diferencia) */
   --card-foreground: 0 0% 98%;
-  --popover: 160 10% 13%; /* verde azulado para popover */
+  --popover: 220 15% 13%; /* azul oscuro para popover */
   --popover-foreground: 0 0% 98%;
-  --border: 220 15% 18%; /* azul para bordes */
-  --input: 160 15% 18%; /* verde para inputs */
+  --border: 220 15% 20%; /* azul para bordes (ligeramente más claro) */
+  --input: 220 15% 16%; /* azul oscuro para inputs */
 
   /* Colores oscuros */
   --primary: 220 60% 60%; /* azul principal */
   --primary-foreground: 0 0% 100%;
-  --secondary: 160 30% 18%; /* verde oscuro para secondary */
+  --secondary: 220 15% 18%; /* azul oscuro para secondary */
   --secondary-foreground: 0 0% 98%;
-  --accent: 200 40% 20%; /* azul verdoso para acento */
+  --accent: 220 20% 22%; /* azul oscuro para acento */
   --accent-foreground: 0 0% 98%;
 
   /* Textos */
-  --color-bg: #101624; /* azul oscuro real */
+  --color-bg: #161b26; /* azul oscuro base */
   --color-text: white;
-  --muted-foreground: 160 20% 60%; /* verde azulado para muted */
+  --muted-foreground: 220 10% 60%; /* azul grisáceo para muted */
 
   /* Colores para gráficos */
   --chart-1: 220 70% 50%; /* azul */
