@@ -1,15 +1,42 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Bell } from 'lucide-react';
-import { usePayments } from '@/components/context/PaymentContext';
+import { Bell, Loader2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
+interface Recordatorio {
+  id_recordatorio: string;
+  id_pago: string;
+  fecha_aviso: string;
+  mensaje: string | null;
+  pago: {
+    id_pago: string;
+    titulo: string;
+    monto: number;
+    fecha_vencimiento: string;
+    estado: string;
+    categoria: {
+      nombre: string;
+    };
+    metodo_pago: {
+      nombre: string;
+    };
+  };
+}
+
 export function NotificationBell() {
-  const { pagos } = usePayments();
   const [isOpen, setIsOpen] = useState(false);
+  const [recordatorios, setRecordatorios] = useState<Recordatorio[]>([]);
+  const [loading, setLoading] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Cargar recordatorios
+  useEffect(() => {
+    if (isOpen) {
+      fetchRecordatorios();
+    }
+  }, [isOpen]);
 
   // Cerrar dropdown al hacer clic fuera
   useEffect(() => {
@@ -28,43 +55,38 @@ export function NotificationBell() {
     };
   }, [isOpen]);
 
-  // Obtener pagos desde hoy en adelante (pendientes y vencidos)
-  const getUpcomingPayments = () => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    return pagos
-      .filter((pago) => {
-        // Incluir pagos vencidos, de hoy y futuros que no estén pagados
-        const pagoDate = new Date(pago.fecha_vencimiento);
-        pagoDate.setHours(0, 0, 0, 0);
-        return (pago.estado === 'Pendiente' || pago.estado === 'Vencido');
-      })
-      .sort((a, b) => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const aDate = new Date(a.fecha_vencimiento);
-        aDate.setHours(0, 0, 0, 0);
-        const bDate = new Date(b.fecha_vencimiento);
-        bDate.setHours(0, 0, 0, 0);
-
-        // Calcular días desde hoy (negativo si es pasado)
-        const aDays = Math.floor((aDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-        const bDays = Math.floor((bDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
-        // Primero ordenar por cercanía (más cercano primero)
-        if (aDays !== bDays) {
-          return aDays - bDays;
-        }
-
-        // Si tienen la misma fecha, ordenar por monto (más caro primero)
-        return b.monto - a.monto;
-      });
+  const fetchRecordatorios = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/recordatorios');
+      const data = await response.json();
+      
+      if (response.ok) {
+        // Filtrar solo recordatorios futuros o del día de hoy y pagos no completados
+        const now = new Date();
+        now.setHours(0, 0, 0, 0); // Establecer a medianoche para comparar solo fechas
+        
+        const filtered = data.recordatorios.filter((r: Recordatorio) => {
+          const fechaAviso = new Date(r.fecha_aviso);
+          fechaAviso.setHours(0, 0, 0, 0);
+          return fechaAviso >= now && r.pago.estado !== 'Pagado';
+        });
+        
+        // Ordenar por fecha de aviso (más cercano primero)
+        filtered.sort((a: Recordatorio, b: Recordatorio) => {
+          return new Date(a.fecha_aviso).getTime() - new Date(b.fecha_aviso).getTime();
+        });
+        
+        setRecordatorios(filtered);
+      }
+    } catch (error) {
+      console.error('Error al cargar recordatorios:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const upcomingPayments = getUpcomingPayments();
-  const notificationCount = upcomingPayments.length;
+  const notificationCount = recordatorios.length;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-CO', {
@@ -74,7 +96,7 @@ export function NotificationBell() {
     }).format(amount);
   };
 
-  const formatDate = (date: Date) => {
+  const formatDateTime = (date: string) => {
     return new Date(date).toLocaleDateString('es-CO', {
       day: 'numeric',
       month: 'short',
@@ -82,22 +104,57 @@ export function NotificationBell() {
     });
   };
 
-  const getDaysText = (date: Date) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const pagoDate = new Date(date);
-    pagoDate.setHours(0, 0, 0, 0);
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('es-CO', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
+
+  const getTimeUntilReminder = (fechaAviso: string) => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // Comparar solo fechas
     
-    const diffDays = Math.floor((pagoDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    const reminderDate = new Date(fechaAviso);
+    reminderDate.setHours(0, 0, 0, 0);
+    
+    const diffMs = reminderDate.getTime() - now.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffDays < 0) {
-      const days = Math.abs(diffDays);
-      return { text: `Vencido hace ${days} día${days !== 1 ? 's' : ''}`, variant: 'destructive' as const };
+      return { text: 'Vencido', variant: 'destructive' as const };
     }
-    if (diffDays === 0) return { text: 'Vence hoy', variant: 'destructive' as const };
-    if (diffDays === 1) return { text: 'Vence mañana', variant: 'default' as const };
-    if (diffDays <= 7) return { text: `Vence en ${diffDays} días`, variant: 'secondary' as const };
-    return { text: `Vence en ${diffDays} días`, variant: 'outline' as const };
+    if (diffDays === 0) {
+      return { text: 'Hoy', variant: 'destructive' as const };
+    }
+    if (diffDays === 1) {
+      return { text: 'Mañana', variant: 'default' as const };
+    }
+    if (diffDays <= 7) {
+      return { text: `En ${diffDays} días`, variant: 'secondary' as const };
+    }
+    return { text: `En ${diffDays} días`, variant: 'outline' as const };
+  };
+
+  const deleteRecordatorio = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm('¿Eliminar este recordatorio?')) return;
+
+    try {
+      const response = await fetch(`/api/recordatorios?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setRecordatorios(recordatorios.filter(r => r.id_recordatorio !== id));
+      } else {
+        alert('Error al eliminar el recordatorio');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error al eliminar el recordatorio');
+    }
   };
 
   return (
@@ -126,49 +183,66 @@ export function NotificationBell() {
             </div>
 
             <div className="max-h-[500px] overflow-y-auto">
-              {upcomingPayments.length === 0 ? (
+              {loading ? (
+                <div className="p-8 text-center">
+                  <Loader2 className="w-8 h-8 mx-auto mb-3 animate-spin text-primary" />
+                  <p className="text-sm text-muted-foreground">Cargando recordatorios...</p>
+                </div>
+              ) : recordatorios.length === 0 ? (
                 <div className="p-8 text-center text-muted-foreground">
                   <Bell className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p className="font-medium">¡Todo al día!</p>
-                  <p className="text-sm">No tienes pagos pendientes</p>
+                  <p className="font-medium">Sin recordatorios</p>
+                  <p className="text-sm">No tienes recordatorios programados</p>
                 </div>
               ) : (
                 <div className="divide-y divide-border">
-                  {upcomingPayments.map((pago) => {
-                    const daysInfo = getDaysText(pago.fecha_vencimiento);
-                    const isUrgent = daysInfo.variant === 'destructive';
+                  {recordatorios.map((recordatorio) => {
+                    const timeInfo = getTimeUntilReminder(recordatorio.fecha_aviso);
+                    const isUrgent = timeInfo.variant === 'destructive';
 
                     return (
                       <div
-                        key={pago.id}
-                        className={`p-4 hover:bg-muted/50 transition-colors cursor-pointer ${
+                        key={recordatorio.id_recordatorio}
+                        className={`p-4 hover:bg-muted/50 transition-colors ${
                           isUrgent ? 'bg-red-50 dark:bg-red-950/20 border-l-4 border-l-red-500' : ''
                         }`}
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0">
                             <h4 className="font-semibold text-foreground truncate">
-                              {pago.titulo}
+                              {recordatorio.pago.titulo}
                             </h4>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {pago.categoria} • {formatDate(pago.fecha_vencimiento)}
-                            </p>
-                            <Badge variant={daysInfo.variant} className="mt-2">
-                              {daysInfo.text}
-                            </Badge>
+                            {recordatorio.mensaje && (
+                              <p className="text-xs text-muted-foreground mt-1 italic">
+                                "{recordatorio.mensaje}"
+                              </p>
+                            )}
+                            <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                              <span>{recordatorio.pago.categoria.nombre}</span>
+                              <span>•</span>
+                              <span>Vence: {formatDate(recordatorio.pago.fecha_vencimiento)}</span>
+                            </div>
+                            <div className="flex items-center gap-2 mt-2">
+                              <Badge variant={timeInfo.variant}>
+                                🔔 {timeInfo.text}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground">
+                                Aviso: {formatDateTime(recordatorio.fecha_aviso)}
+                              </span>
+                            </div>
                           </div>
-                          <div className="text-right flex-shrink-0">
+                          <div className="flex flex-col items-end gap-2 flex-shrink-0">
                             <div className={`font-bold text-base ${
                               isUrgent ? 'text-red-600 dark:text-red-400' : 'text-foreground'
                             }`}>
-                              {formatCurrency(pago.monto)}
+                              {formatCurrency(recordatorio.pago.monto)}
                             </div>
-                            <Badge 
-                              variant="outline" 
-                              className="mt-1 text-[10px]"
+                            <button
+                              onClick={(e) => deleteRecordatorio(recordatorio.id_recordatorio, e)}
+                              className="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                             >
-                              {pago.metodo_pago}
-                            </Badge>
+                              Eliminar
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -178,16 +252,16 @@ export function NotificationBell() {
               )}
             </div>
 
-            {upcomingPayments.length > 0 && (
+            {recordatorios.length > 0 && (
               <div className="p-3 border-t bg-muted/30 text-center">
                 <button
                   onClick={() => {
                     setIsOpen(false);
-                    window.location.href = '/protected/payments';
+                    window.location.href = '/protected/calendar';
                   }}
                   className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
                 >
-                  Ver todos los pagos →
+                  Ver calendario →
                 </button>
               </div>
             )}

@@ -7,6 +7,11 @@ const prisma = new PrismaClient();
 function serializeBigInt(obj: any): any {
   if (obj === null || obj === undefined) return obj;
   if (typeof obj === 'bigint') return obj.toString();
+  if (obj instanceof Date) return obj.toISOString();
+  // Manejar Prisma Decimal
+  if (typeof obj === 'object' && 'toNumber' in obj) {
+    return obj.toNumber();
+  }
   if (Array.isArray(obj)) return obj.map(serializeBigInt);
   if (typeof obj === 'object') {
     const out: any = {};
@@ -27,11 +32,24 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
+    console.log('[GET /api/recordatorios] Usuario:', user.id);
+
     const { searchParams } = new URL(request.url);
     const idPago = searchParams.get('id_pago');
 
-    // Si se especifica id_pago, filtrar por ese pago
-    const where = idPago ? { id_pago: BigInt(idPago) } : {};
+    // Construir el where con filtro anidado por usuario
+    const where: any = {
+      pago: {
+        id_usuario: user.id
+      }
+    };
+
+    // Si se especifica id_pago específico, agregarlo al filtro
+    if (idPago) {
+      where.id_pago = BigInt(idPago);
+    }
+
+    console.log('[GET /api/recordatorios] Where:', JSON.stringify(where, (_, v) => typeof v === 'bigint' ? v.toString() : v));
 
     const recordatorios = await prisma.recordatorio.findMany({
       where,
@@ -46,10 +64,9 @@ export async function GET(request: NextRequest) {
       orderBy: { fecha_aviso: 'asc' }
     });
 
-    // Filtrar por usuario (solo recordatorios de pagos del usuario autenticado)
-    const recordatoriosUsuario = recordatorios.filter(r => r.pago.id_usuario === user.id);
+    console.log('[GET /api/recordatorios] Recordatorios encontrados:', recordatorios.length);
 
-    return NextResponse.json({ recordatorios: serializeBigInt(recordatoriosUsuario) });
+    return NextResponse.json({ recordatorios: serializeBigInt(recordatorios) });
   } catch (error) {
     console.error('GET /api/recordatorios error:', error);
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });

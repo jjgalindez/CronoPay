@@ -59,12 +59,15 @@ export function ProfileForm({ profile }: ProfileFormProps) {
     setSuccess(false);
 
     try {
-      const response = await fetch('/api/usuarios-profile', {
+      const response = await fetch('/api/usuarios-perfil', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          old_avatar_url: profile.avatar_url // Enviar el avatar anterior para eliminarlo
+        }),
       });
 
       const data = await response.json();
