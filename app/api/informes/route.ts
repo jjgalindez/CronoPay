@@ -7,6 +7,10 @@ const prisma = new PrismaClient();
 function serializeBigInt(obj: any): any {
   if (obj === null || obj === undefined) return obj;
   if (typeof obj === 'bigint') return obj.toString();
+  if (obj instanceof Date) return obj.toISOString();
+  if (typeof obj === 'object' && 'toNumber' in obj) {
+    return obj.toNumber();
+  }
   if (Array.isArray(obj)) return obj.map(serializeBigInt);
   if (typeof obj === 'object') {
     const out: any = {};
@@ -86,7 +90,7 @@ export async function POST(request: NextRequest) {
     // Crear nuevo informe
     const informe = await prisma.informe.create({
       data: {
-        mes,
+        mes: mes,
         id_usuario: user.id,
         total_pagado: total_pagado ? parseFloat(total_pagado) : 0,
         total_pendiente: total_pendiente ? parseFloat(total_pendiente) : 0
@@ -99,3 +103,4 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }
+

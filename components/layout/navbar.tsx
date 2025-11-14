@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { AppNavLinks } from "@/components/layout/AppNavLinks";
 
 interface NavbarProps {
   variant?: 'landing' | 'app' | 'minimal';
@@ -42,28 +43,7 @@ export default function Navbar({ variant = 'landing', fixed = true }: NavbarProp
           </ul>
         ) : isApp ? (
           // Navegación para App
-          <ul className="hidden md:flex space-x-8 font-medium">
-            <li>
-              <Link href="/protected" className="text-foreground hover:text-primary transition">
-                Inicio
-              </Link>
-            </li>
-            <li>
-              <Link href="/protected/calendar" className="text-foreground hover:text-primary transition">
-                Calendario
-              </Link>
-            </li>
-            <li>
-              <Link href="/protected/payments" className="text-foreground hover:text-primary transition">
-                Pagos
-              </Link>
-            </li>
-            <li>
-              <Link href="/protected/reports" className="text-foreground hover:text-primary transition">
-                Reportes
-              </Link>
-            </li>
-          </ul>
+          <AppNavLinks />
         ) : (
           // Variante minimal - sin navegación
           <div></div>
