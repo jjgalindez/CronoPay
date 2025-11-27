@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Pago } from "@/components/context/PaymentContext";
+import { parseDate, formatDate } from "@/utils/formatters";
 
 interface UpcomingPaymentsListProps {
   payments: Pago[];
@@ -22,12 +23,7 @@ export function UpcomingPaymentsList({
     }).format(amount);
   };
 
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("es-CO", {
-      day: "numeric",
-      month: "short",
-    });
-  };
+  // Usar formateadores centrales para mantener consistencia
 
   return (
     <Card>
@@ -48,7 +44,7 @@ export function UpcomingPaymentsList({
               <div
                 key={pago.id}
                 className="p-2 rounded-lg hover:bg-muted/50 transition-colors border border-transparent hover:border-border cursor-pointer"
-                onClick={() => onSelectPayment(new Date(pago.fecha_vencimiento))}
+                onClick={() => onSelectPayment(parseDate(pago.fecha_vencimiento))}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">

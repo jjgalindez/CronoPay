@@ -1,6 +1,7 @@
 "use client";
 
 import { usePayments } from '@/components/context/PaymentContext';
+import { parseDate } from '@/utils/formatters';
 
 export function PaymentCalendar() {
   const { pagos, loading } = usePayments();
@@ -28,7 +29,7 @@ export function PaymentCalendar() {
     if (!pagos || loading) return [];
     
     return pagos.filter(pago => {
-      const pagoDate = new Date(pago.fecha_vencimiento);
+      const pagoDate = parseDate(pago.fecha_vencimiento);
       return pagoDate.getFullYear() === year && pagoDate.getMonth() === month;
     });
   };
@@ -36,7 +37,7 @@ export function PaymentCalendar() {
   // Obtener días con pagos
   const paymentsThisMonth = getPaymentsForCurrentMonth();
   const paymentDaysByDate = paymentsThisMonth.reduce((acc, pago) => {
-    const day = new Date(pago.fecha_vencimiento).getDate();
+    const day = parseDate(pago.fecha_vencimiento).getDate();
     if (!acc[day]) {
       acc[day] = [];
     }
