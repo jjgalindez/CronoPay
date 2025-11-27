@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/client";
+import useAvatarUpload from '@/hooks/useAvatarUpload';
+import usePasswordChange from '@/hooks/usePasswordChange';
 
 interface ProfileData {
   id: string;
@@ -24,25 +25,22 @@ interface ProfileFormProps {
 
 export function ProfileForm({ profile }: ProfileFormProps) {
   const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const supabase = createClient();
-  
   const [loading, setLoading] = useState(false);
-  const [uploadingImage, setUploadingImage] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   
   // Estados para cambio de contraseña
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [passwordLoading, setPasswordLoading] = useState(false);
-  const [passwordSuccess, setPasswordSuccess] = useState(false);
-  const [passwordError, setPasswordError] = useState<string | null>(null);
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
+  const {
+    passwordData,
+    setPasswordData,
+    loading: passwordLoading,
+    success: passwordSuccess,
+    error: passwordError,
+    handleSubmit: handlePasswordSubmit,
+    handleCancel: handlePasswordCancelHook,
+  } = usePasswordChange();
   
   const [formData, setFormData] = useState({
     nombre: profile.nombre || '',
@@ -51,6 +49,22 @@ export function ProfileForm({ profile }: ProfileFormProps) {
   });
 
   const isGoogleAvatar = formData.avatar_url?.includes("googleusercontent.com");
+
+  // Hook para subir avatar
+  const {
+    fileInputRef,
+    uploadingImage,
+    error: avatarError,
+    avatarUrl,
+    setAvatarUrl,
+    handleFileSelect,
+    handleFileChange: hookHandleFileChange,
+  } = useAvatarUpload(profile.id, profile.avatar_url);
+
+  // Sincronizar avatarUrl del hook con el formData local
+  if (avatarUrl && avatarUrl !== formData.avatar_url) {
+    setFormData(prev => ({ ...prev, avatar_url: avatarUrl }));
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,119 +117,29 @@ export function ProfileForm({ profile }: ProfileFormProps) {
     setError(null);
   };
 
-  const handleFileSelect = () => {
-    fileInputRef.current?.click();
-  };
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validar tipo de archivo
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
-    if (!validTypes.includes(file.type)) {
-      setError('Por favor selecciona una imagen válida (JPG, PNG, WEBP o GIF)');
-      return;
-    }
-
-    // Validar tamaño (máximo 10MB)
-    const maxSize = 10 * 1024 * 1024; // 10MB
-    if (file.size > maxSize) {
-      setError('La imagen debe ser menor a 10MB');
-      return;
-    }
-
-    setUploadingImage(true);
-    setError(null);
-
-    try {
-      // Generar nombre único para el archivo
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${profile.id}-${Date.now()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
-
-      // Subir archivo a Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('UserData')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
-      // Obtener URL pública del archivo
-      const { data: { publicUrl } } = supabase.storage
-        .from('UserData')
-        .getPublicUrl(filePath);
-      
-      // Actualizar el estado con la nueva URL
+    // Delegar a hook y sincronizar la URL resultante
+    const publicUrl = await hookHandleFileChange(e);
+    if (publicUrl) {
       setFormData(prev => ({ ...prev, avatar_url: publicUrl }));
-      
-    } catch (err) {
-      console.error('Error subiendo imagen:', err);
-      setError(err instanceof Error ? err.message : 'Error al subir la imagen');
-    } finally {
-      setUploadingImage(false);
+      setAvatarUrl(publicUrl);
     }
   };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    setPasswordLoading(true);
-    setPasswordError(null);
-    setPasswordSuccess(false);
-
-    // Validar que las contraseñas coincidan
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setPasswordError('Las contraseñas no coinciden');
-      setPasswordLoading(false);
-      return;
-    }
-
-    // Validar longitud mínima
-    if (passwordData.newPassword.length < 6) {
-      setPasswordError('La contraseña debe tener al menos 6 caracteres');
-      setPasswordLoading(false);
-      return;
-    }
-
-    try {
-      const { error } = await supabase.auth.updateUser({ 
-        password: passwordData.newPassword 
-      });
-      
-      if (error) throw error;
-      
-      setPasswordSuccess(true);
-      setPasswordData({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      });
-      
-      // No cerrar el formulario inmediatamente para que el usuario vea el mensaje
+    const result = await handlePasswordSubmit();
+    if ((result && (result as any).success) || passwordSuccess) {
+      // Mostrar éxito y cerrar después de 3s
       setTimeout(() => {
         setIsChangingPassword(false);
-        setPasswordSuccess(false);
       }, 3000);
-    } catch (err) {
-      setPasswordError(err instanceof Error ? err.message : 'Error al cambiar la contraseña');
-    } finally {
-      setPasswordLoading(false);
     }
   };
 
   const handlePasswordCancel = () => {
-    setPasswordData({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    });
+    handlePasswordCancelHook();
     setIsChangingPassword(false);
-    setPasswordError(null);
   };
 
   return (
@@ -315,7 +239,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
           </div>
         )}
 
-        {error && (
+        {(error || avatarError) && (
           <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
             <svg className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
@@ -324,8 +248,8 @@ export function ProfileForm({ profile }: ProfileFormProps) {
               <p className="text-sm font-medium text-red-800 dark:text-red-200">
                 Error al actualizar el perfil
               </p>
-              <p className="text-xs text-red-700 dark:text-red-300 mt-0.5">
-                {error}
+                <p className="text-xs text-red-700 dark:text-red-300 mt-0.5">
+                {error || avatarError}
               </p>
             </div>
           </div>
@@ -420,7 +344,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
                           className="hidden"
                         />
                         <p className="text-xs text-muted-foreground">
-                          Haz clic en el avatar o usa el botón para cambiar tu foto. Máximo 10MB.
+                          Haz clic en el avatar o usa el botón para cambiar tu foto. Máximo 5MB.
                         </p>
                       </div>
                     )}

@@ -61,7 +61,9 @@ export async function GET(request: NextRequest) {
           }
         }
       },
-      orderBy: { fecha_aviso: 'asc' }
+      // Ordenar por fecha y hora (se castea a any para evitar errores de tipos
+      // si Prisma client/local schema aún no incluye la columna)
+      orderBy: ([{ fecha_aviso: 'asc' }, { hora: 'asc' }] as any)
     });
 
     console.log('[GET /api/recordatorios] Recordatorios encontrados:', recordatorios.length);
@@ -83,7 +85,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { id_pago, fecha_aviso, mensaje } = body;
+    const { id_pago, fecha_aviso, hora, mensaje, notification_id } = body;
 
     if (!id_pago || !fecha_aviso) {
       return NextResponse.json({ error: 'id_pago y fecha_aviso son requeridos' }, { status: 400 });
@@ -99,11 +101,17 @@ export async function POST(request: NextRequest) {
     }
 
     const recordatorio = await prisma.recordatorio.create({
-      data: {
+      // casteamos el payload a any para evitar errores de tipado cuando el cliente Prisma
+      // local no refleje aún la alteración de la tabla
+      data: ({
         id_pago: BigInt(id_pago),
         fecha_aviso: new Date(fecha_aviso),
-        mensaje: mensaje || null
-      },
+        // `hora` en la tabla es time without time zone; guardamos como string (ej: "13:30:00") o null
+        hora: hora || null,
+        mensaje: mensaje || null,
+        // notification_id opcional para registrar id de notificación externa
+        notification_id: notification_id || null
+      } as any),
       include: {
         pago: true
       }

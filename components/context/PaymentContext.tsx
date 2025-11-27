@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { parseDate } from '@/utils/formatters';
 
 // Interfaces
 export interface Pago {
@@ -93,20 +94,35 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
       }
       
       const data = await response.json();
+      // Log raw response for debugging
+      console.log('[PaymentContext] GET /api/pagos - raw response count:', data?.pagos?.length ?? 0);
+      try {
+        console.log('[PaymentContext] GET /api/pagos - sample raw pagos:', JSON.stringify((data?.pagos || []).slice(0, 5)));
+      } catch (e) {
+        console.log('[PaymentContext] GET /api/pagos - could not stringify raw pagos sample', e);
+      }
       
       // Conversion de fechas y estados
       const processedPayments = (data.pagos || []).map((pago: any) => ({
         id: parseInt(pago.id_pago),
         titulo: pago.titulo,
         monto: parseFloat(pago.monto),
-        fecha_vencimiento: new Date(pago.fecha_vencimiento),
+        fecha_vencimiento: parseDate(pago.fecha_vencimiento),
         categoria: pago.categoria?.nombre || 'Sin categoría',
         metodo_pago: pago.metodo_pago?.tipo || 'Sin método',
-        estado: determinePaymentStatus(new Date(pago.fecha_vencimiento), pago.estado),
+        estado: determinePaymentStatus(parseDate(pago.fecha_vencimiento), pago.estado),
         user_id: pago.id_usuario,
-        created_at: new Date(pago.created_at),
-        updated_at: new Date(pago.updated_at)
+        created_at: parseDate(pago.created_at),
+        updated_at: parseDate(pago.updated_at)
       }));
+
+      // Log processed payments for debugging
+      try {
+        console.log('[PaymentContext] processed payments count:', processedPayments.length);
+        console.log('[PaymentContext] sample processed pagos:', JSON.stringify(processedPayments.slice(0, 5)));
+      } catch (e) {
+        console.log('[PaymentContext] could not stringify processed payments', e);
+      }
       
       setPagos(processedPayments);
     } catch (err) {
@@ -122,7 +138,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     if (currentStatus === 'Pagado') return 'Pagado';
 
     // Normalizar las fechas para comparación (sin horas)
-    const dueDateNormalized = new Date(dueDate);
+    const dueDateNormalized = parseDate(dueDate);
     dueDateNormalized.setHours(0, 0, 0, 0);
     
     const today = new Date();
@@ -141,7 +157,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     const currentYear = new Date().getFullYear();
     
     const pagosMesActual = pagos.filter((pago) => {
-      const pagoDate = pago.fecha_vencimiento;
+      const pagoDate = parseDate(pago.fecha_vencimiento);
       return pagoDate.getMonth() === currentMonth && pagoDate.getFullYear() === currentYear;
     });
 
@@ -194,7 +210,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
         pago.fecha_vencimiento <= next30Days
       )
       .map((pago) => {
-        const pagoDate = new Date(pago.fecha_vencimiento);
+        const pagoDate = parseDate(pago.fecha_vencimiento);
         pagoDate.setHours(0, 0, 0, 0);
         
         const diasRestantes = Math.ceil(
@@ -221,11 +237,13 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     pagos
       .filter((pago) => pago.estado === 'Pendiente' || pago.estado === 'Vencido')
       .forEach((pago) => {
-        const dateKey = pago.fecha_vencimiento.toDateString();
-        
+        const fecha = parseDate(pago.fecha_vencimiento);
+        fecha.setHours(0, 0, 0, 0);
+        const dateKey = fecha.toDateString();
+
         if (!reminderMap.has(dateKey)) {
           reminderMap.set(dateKey, {
-            fecha: pago.fecha_vencimiento,
+            fecha: fecha,
             pagos: [],
             totalDia: 0
           });

@@ -18,6 +18,7 @@ export function ReminderModal({ pago, onClose, onSuccess }: ReminderModalProps) 
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     fecha_aviso: "",
+    hora: "",
     mensaje: "",
   });
 
@@ -37,7 +38,8 @@ export function ReminderModal({ pago, onClose, onSuccess }: ReminderModalProps) 
         body: JSON.stringify({
           id_pago: pago.id,
           fecha_aviso: formData.fecha_aviso,
-          mensaje: formData.mensaje || null,
+            hora: formData.hora || null,
+            mensaje: formData.mensaje || null,
         }),
       });
 
@@ -131,6 +133,22 @@ export function ReminderModal({ pago, onClose, onSuccess }: ReminderModalProps) 
               <p className="text-xs text-muted-foreground">
                 Recibirás una notificación en esta fecha
               </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="hora">Hora del Recordatorio (Opcional)</Label>
+                <Input
+                  id="hora"
+                  type="time"
+                  value={formData.hora}
+                  onChange={(e) => setFormData({ ...formData, hora: e.target.value })}
+                  disabled={loading}
+                />
+                <p className="text-xs text-muted-foreground">Puedes seleccionar una hora exacta (ej: 13:30)</p>
+              </div>
+
+              
             </div>
 
             <div className="space-y-2">

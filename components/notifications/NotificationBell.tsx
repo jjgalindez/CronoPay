@@ -4,12 +4,15 @@ import { useState, useEffect, useRef } from 'react';
 import { Bell, Loader2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { combineDateTime, formatDate as formatDateUtil, formatDateTime as formatDateTimeUtil } from '@/utils/formatters';
 
 interface Recordatorio {
   id_recordatorio: string;
   id_pago: string;
   fecha_aviso: string;
+  hora?: string | null;
   mensaje: string | null;
+  notification_id?: string | null;
   pago: {
     id_pago: string;
     titulo: string;
@@ -62,22 +65,33 @@ export function NotificationBell() {
       const data = await response.json();
       
       if (response.ok) {
-        // Filtrar solo recordatorios futuros o del día de hoy y pagos no completados
+        // Filtrar solo recordatorios futuros (considerando hora si existe) y pagos no completados
         const now = new Date();
-        now.setHours(0, 0, 0, 0); // Establecer a medianoche para comparar solo fechas
-        
-        const filtered = data.recordatorios.filter((r: Recordatorio) => {
-          const fechaAviso = new Date(r.fecha_aviso);
-          fechaAviso.setHours(0, 0, 0, 0);
-          return fechaAviso >= now && r.pago.estado !== 'Pagado';
+
+        const filtered = data.recordatorios
+          .filter((r: Recordatorio) => {
+            if (r.pago.estado === 'Pagado') return false;
+            const reminderDate = combineDateTime(r.fecha_aviso, r.hora);
+            return reminderDate >= now;
+          })
+          .map((r: Recordatorio) => ({
+            ...r,
+            // attach computed timestamp to help sorting and rendering
+            __reminderDate: combineDateTime(r.fecha_aviso, r.hora).getTime(),
+          } as any));
+
+        // Ordenar por fecha+hora (más cercano primero)
+        filtered.sort((a: any, b: any) => {
+          return a.__reminderDate - b.__reminderDate;
         });
-        
-        // Ordenar por fecha de aviso (más cercano primero)
-        filtered.sort((a: Recordatorio, b: Recordatorio) => {
-          return new Date(a.fecha_aviso).getTime() - new Date(b.fecha_aviso).getTime();
+
+        // strip helper field before setting state
+        const cleaned = filtered.map((r: any) => {
+          const { __reminderDate, ...rest } = r;
+          return rest as Recordatorio;
         });
-        
-        setRecordatorios(filtered);
+
+        setRecordatorios(cleaned);
       }
     } catch (error) {
       console.error('Error al cargar recordatorios:', error);
@@ -96,44 +110,47 @@ export function NotificationBell() {
     }).format(amount);
   };
 
-  const formatDateTime = (date: string) => {
-    return new Date(date).toLocaleDateString('es-CO', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    });
+  const formatDateTime = (date: string, hora?: string | null) => {
+    return formatDateTimeUtil(date, hora);
   };
 
   const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('es-CO', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    });
+    return formatDateUtil(date);
   };
 
-  const getTimeUntilReminder = (fechaAviso: string) => {
+  const getTimeUntilReminder = (fechaAviso: string, hora?: string | null) => {
     const now = new Date();
-    now.setHours(0, 0, 0, 0); // Comparar solo fechas
-    
-    const reminderDate = new Date(fechaAviso);
-    reminderDate.setHours(0, 0, 0, 0);
-    
+    const reminderDate = combineDateTime(fechaAviso, hora);
+
     const diffMs = reminderDate.getTime() - now.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffDays < 0) {
+    // Si ya pasó
+    if (diffMs < 0) {
       return { text: 'Vencido', variant: 'destructive' as const };
     }
-    if (diffDays === 0) {
-      return { text: 'Hoy', variant: 'destructive' as const };
+
+    // Si es hoy
+    if (
+      now.getFullYear() === reminderDate.getFullYear() &&
+      now.getMonth() === reminderDate.getMonth() &&
+      now.getDate() === reminderDate.getDate()
+    ) {
+      // mostrar como 'Hoy a las HH:MM'
+      return {
+        text: `Hoy`,
+        variant: 'destructive' as const,
+      };
     }
+
     if (diffDays === 1) {
       return { text: 'Mañana', variant: 'default' as const };
     }
+
     if (diffDays <= 7) {
       return { text: `En ${diffDays} días`, variant: 'secondary' as const };
     }
+
     return { text: `En ${diffDays} días`, variant: 'outline' as const };
   };
 
@@ -166,8 +183,8 @@ export function NotificationBell() {
       >
         <Bell className="w-5 h-5" />
         {notificationCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-500 rounded-full">
-            {notificationCount > 99 ? '99+' : notificationCount}
+          <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] px-1 h-5 text-[10px] font-bold text-white bg-red-500 rounded-full">
+            {notificationCount}
           </span>
         )}
       </button>
@@ -197,7 +214,7 @@ export function NotificationBell() {
               ) : (
                 <div className="divide-y divide-border">
                   {recordatorios.map((recordatorio) => {
-                    const timeInfo = getTimeUntilReminder(recordatorio.fecha_aviso);
+                    const timeInfo = getTimeUntilReminder(recordatorio.fecha_aviso, recordatorio.hora);
                     const isUrgent = timeInfo.variant === 'destructive';
 
                     return (
@@ -227,7 +244,7 @@ export function NotificationBell() {
                                 🔔 {timeInfo.text}
                               </Badge>
                               <span className="text-xs text-muted-foreground">
-                                Aviso: {formatDateTime(recordatorio.fecha_aviso)}
+                                Aviso: {formatDateTime(recordatorio.fecha_aviso, recordatorio.hora)}
                               </span>
                             </div>
                           </div>

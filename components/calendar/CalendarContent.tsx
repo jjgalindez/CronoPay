@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { usePayments, Pago } from "@/components/context/PaymentContext";
+import { parseDate } from "@/utils/formatters";
 import { CalendarHeader } from "@/components/calendar/CalendarHeader";
 import { CalendarGrid } from "@/components/calendar/CalendarGrid";
 import { SelectedDayPayments } from "@/components/calendar/SelectedDayPayments";
@@ -26,13 +27,10 @@ export function CalendarContent() {
   // Filtrar pagos del mes actual
   const monthlyPayments = useMemo(() => {
     return pagos.filter((pago) => {
-      const pagoDate = new Date(pago.fecha_vencimiento);
-      return (
-        pagoDate.getFullYear() === year &&
-        pagoDate.getMonth() === month
-      );
+      const pagoDate = parseDate(pago.fecha_vencimiento);
+      return pagoDate.getFullYear() === year && pagoDate.getMonth() === month;
     }).sort((a, b) => 
-      new Date(a.fecha_vencimiento).getTime() - new Date(b.fecha_vencimiento).getTime()
+      parseDate(a.fecha_vencimiento).getTime() - parseDate(b.fecha_vencimiento).getTime()
     );
   }, [pagos, year, month]);
 
@@ -40,7 +38,7 @@ export function CalendarContent() {
   const paymentsByDay = useMemo(() => {
     const map = new Map<number, typeof pagos>();
     monthlyPayments.forEach((pago) => {
-      const day = new Date(pago.fecha_vencimiento).getDate();
+      const day = parseDate(pago.fecha_vencimiento).getDate();
       if (!map.has(day)) {
         map.set(day, []);
       }

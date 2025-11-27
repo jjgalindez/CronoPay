@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePayments } from "@/components/context/PaymentContext";
 import { Calendar, DollarSign } from "lucide-react";
 import { PaymentCalendar } from "@/components/payments/PaymentCalendar";
+import { parseDate, formatDate as formatDateUtil } from "@/utils/formatters";
 
 export function PaymentsContent() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -24,14 +25,14 @@ export function PaymentsContent() {
 
     // Filtrar solo pagos pendientes y futuros
     const pagosPendientes = pagos.filter(pago => {
-      const fechaPago = new Date(pago.fecha_vencimiento);
+      const fechaPago = parseDate(pago.fecha_vencimiento);
       fechaPago.setHours(0, 0, 0, 0);
       return pago.estado === 'Pendiente' && fechaPago >= ahora;
     });
 
     // Ordenar por fecha más cercana
     const pagosOrdenados = [...pagosPendientes].sort((a, b) => 
-      new Date(a.fecha_vencimiento).getTime() - new Date(b.fecha_vencimiento).getTime()
+      parseDate(a.fecha_vencimiento).getTime() - parseDate(b.fecha_vencimiento).getTime()
     );
 
     // Tomar solo los primeros 3
@@ -45,15 +46,7 @@ export function PaymentsContent() {
       minimumFractionDigits: 0,
     }).format(amount);
   };
-
-  const formatDate = (date: Date | string) => {
-    const fecha = typeof date === 'string' ? new Date(date) : date;
-    return fecha.toLocaleDateString('es-CO', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    });
-  };
+  const formatDate = (date: Date | string) => formatDateUtil(date);
 
   const proximosPagos = calcularProximosPagos();
 
