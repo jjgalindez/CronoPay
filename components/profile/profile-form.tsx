@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import useAvatarUpload from '@/hooks/useAvatarUpload';
 import usePasswordChange from '@/hooks/usePasswordChange';
+import { formatDate } from '@/utils/formatters';
 
 interface ProfileData {
   id: string;
@@ -183,11 +184,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
               <div className="space-y-1">
                 <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Miembro desde</Label>
                 <p className="text-sm font-medium">
-                  {new Date(profile.creado_en).toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
+                  {formatDate(profile.creado_en, 'es-ES')}
                 </p>
               </div>
             )}

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, DollarSign } from 'lucide-react';
 import { useState } from 'react';
+import { parseDate } from '@/utils/formatters';
 
 export default function PaymentCalendarReminders() {
   const { calendarReminders } = usePaymentMetrics();
@@ -30,7 +31,7 @@ export default function PaymentCalendarReminders() {
   const isToday = (date: Date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const compareDate = new Date(date);
+    const compareDate = parseDate(date as any);
     compareDate.setHours(0, 0, 0, 0);
     return compareDate.getTime() === today.getTime();
   };
@@ -38,7 +39,7 @@ export default function PaymentCalendarReminders() {
   const isPastDue = (date: Date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const compareDate = new Date(date);
+    const compareDate = parseDate(date as any);
     compareDate.setHours(0, 0, 0, 0);
     return compareDate < today;
   };
@@ -49,7 +50,7 @@ export default function PaymentCalendarReminders() {
     const oneWeek = new Date();
     oneWeek.setDate(today.getDate() + 7);
     oneWeek.setHours(0, 0, 0, 0);
-    const compareDate = new Date(date);
+    const compareDate = parseDate(date as any);
     compareDate.setHours(0, 0, 0, 0);
     
     return compareDate >= today && compareDate <= oneWeek;
@@ -71,7 +72,7 @@ export default function PaymentCalendarReminders() {
   const getDaysBadge = (date: Date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const compareDate = new Date(date);
+    const compareDate = parseDate(date as any);
     compareDate.setHours(0, 0, 0, 0);
     const diffTime = compareDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { PrismaClient } from '@/lib/generated/prisma';
+import { parseDate } from '@/utils/formatters';
 
 const prisma = new PrismaClient();
 // Helper function para convertir BigInt a string
@@ -37,7 +38,6 @@ export async function POST(request: NextRequest) {
 
     // Obtener datos del cuerpo de la petición
     const body = await request.json();
-    console.log('[API] POST /api/pagos - body:', JSON.stringify(body));
     const { titulo, monto, fecha_vencimiento, id_categoria, id_metodo, categoria, metodo_pago } = body;
 
     // Validaciones básicas
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
       data: {
         titulo: titulo,
         monto: parseFloat(monto),
-        fecha_vencimiento: new Date(fecha_vencimiento),
+        fecha_vencimiento: parseDate(fecha_vencimiento),
         id_usuario: user.id,
         id_categoria: categoriaId,
         id_metodo: metodoId,
@@ -146,7 +146,6 @@ export async function POST(request: NextRequest) {
 
     // Convertir BigInt a string para JSON
     const pagoResponse = serializePago(nuevoPago);
-    console.log('[API] POST /api/pagos - response:', JSON.stringify(pagoResponse));
 
     return NextResponse.json({
       message: 'Pago creado exitosamente',
@@ -191,8 +190,6 @@ export async function GET(request: NextRequest) {
 
     // Convertir BigInt a string para JSON
     const pagosResponse = pagos.map(pago => serializePago(pago));
-    console.log('[API] GET /api/pagos - response count:', pagosResponse.length);
-    console.log('[API] GET /api/pagos - sample:', JSON.stringify(pagosResponse.slice(0, 5)));
 
     return NextResponse.json({ pagos: pagosResponse });
 

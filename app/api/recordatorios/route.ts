@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { PrismaClient } from '@/lib/generated/prisma';
+import { parseDate, combineDateTime } from '@/utils/formatters';
 
 const prisma = new PrismaClient();
 
@@ -87,6 +88,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { id_pago, fecha_aviso, hora, mensaje, notification_id } = body;
 
+    console.log('[POST /api/recordatorios] body:', JSON.stringify(body));
+
     if (!id_pago || !fecha_aviso) {
       return NextResponse.json({ error: 'id_pago y fecha_aviso son requeridos' }, { status: 400 });
     }
@@ -100,21 +103,73 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Pago no encontrado o no autorizado' }, { status: 404 });
     }
 
-    const recordatorio = await prisma.recordatorio.create({
-      // casteamos el payload a any para evitar errores de tipado cuando el cliente Prisma
-      // local no refleje aún la alteración de la tabla
-      data: ({
-        id_pago: BigInt(id_pago),
-        fecha_aviso: new Date(fecha_aviso),
-        // `hora` en la tabla es time without time zone; guardamos como string (ej: "13:30:00") o null
-        hora: hora || null,
-        mensaje: mensaje || null,
-        // notification_id opcional para registrar id de notificación externa
-        notification_id: notification_id || null
-      } as any),
-      include: {
-        pago: true
+    // Soportar dos formatos desde el cliente:
+    // 1) fecha_aviso = "YYYY-MM-DD" y hora = "HH:mm" (client envía separados)
+    // 2) fecha_aviso = ISO datetime (ej: "2025-12-31T10:15:00.000Z") y hora = null
+    // En el primer caso combinamos fecha+hora en `horaValue`. En el segundo
+    // usamos la fecha completa enviada por el cliente.
+    const fechaIsDateTime = typeof fecha_aviso === 'string' && /\dT\d/.test(fecha_aviso);
+
+    let fechaAvisoDate: Date;
+    let horaValue: Date | null = null;
+    let horaString: string | null = null;
+
+    if (fechaIsDateTime) {
+      // Cliente ya envió fecha+hora completa en `fecha_aviso` (ISO). Extraemos
+      // la parte de fecha para `fecha_aviso` y guardamos la fecha completa en `hora`.
+      const combined = parseDate(fecha_aviso);
+      fechaAvisoDate = new Date(combined.getFullYear(), combined.getMonth(), combined.getDate());
+      horaValue = combined;
+      // Derivar hora string en formato HH:mm:ss usando la hora local
+      const hh = combined.getHours();
+      const mm = combined.getMinutes();
+      horaString = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:00`;
+    } else {
+      // Fecha sin hora; parseDate construye date-only correctamente.
+      fechaAvisoDate = parseDate(fecha_aviso);
+      horaValue = hora ? combineDateTime(fecha_aviso, hora) : null;
+      if (hora) {
+        // hora viene como 'HH:mm' ya normalizada desde el cliente
+        const parts = String(hora).split(':');
+        const hh = parseInt(parts[0] || '0', 10) || 0;
+        const mm = parseInt(parts[1] || '0', 10) || 0;
+        horaString = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:00`;
       }
+    }
+    console.log('[POST /api/recordatorios] parsed:', {
+      id_pago: id_pago?.toString?.() || id_pago,
+      fechaAvisoDate: fechaAvisoDate && fechaAvisoDate.toISOString(),
+      horaValue: horaValue && horaValue.toISOString(),
+      horaString,
+      originalHora: hora,
+      fechaIsDateTime,
+    });
+
+    // Usar SQL parametrizado para insertar el campo `hora` como tipo `time`
+    // y evitar que Prisma intente convertir la cadena a Date (y falle).
+    // Hacemos una inserción y luego recuperamos el registro con sus relaciones.
+    const insertResult: any = await prisma.$queryRaw`
+      INSERT INTO public.recordatorio (fecha_aviso, mensaje, id_pago, hora, notification_id, created_at)
+      VALUES (
+        ${fechaAvisoDate.toISOString().split('T')[0]}::date,
+        ${mensaje || null},
+        ${BigInt(id_pago)},
+        ${horaString}::time,
+        ${notification_id || null},
+        now()
+      )
+      RETURNING id_recordatorio;
+    `;
+
+    const insertedId = insertResult && insertResult[0] && insertResult[0].id_recordatorio ? insertResult[0].id_recordatorio : null;
+
+    if (!insertedId) {
+      throw new Error('No se pudo insertar el recordatorio');
+    }
+
+    const recordatorio = await prisma.recordatorio.findUnique({
+      where: { id_recordatorio: BigInt(insertedId) },
+      include: { pago: true }
     });
 
     return NextResponse.json({ recordatorio: serializeBigInt(recordatorio), message: 'Recordatorio creado' });

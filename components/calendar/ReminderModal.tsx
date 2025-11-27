@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, X } from "lucide-react";
 import { Pago } from "@/components/context/PaymentContext";
+import { formatDate, parseTimeTo24 } from "@/utils/formatters";
 
 interface ReminderModalProps {
   pago: Pago | null;
@@ -30,6 +31,13 @@ export function ReminderModal({ pago, onClose, onSuccess }: ReminderModalProps) 
     setError(null);
 
     try {
+      // Enviar fecha (YYYY-MM-DD) y hora (HH:mm) por separado al servidor.
+      // El servidor combina con `combineDateTime` en su zona local para
+      // obtener el time-of-day correcto al guardar en la columna `hora`.
+      const payloadFecha = formData.fecha_aviso;
+      // Normalizar entrada AM/PM a HH:mm
+      const payloadHora = formData.hora ? parseTimeTo24(formData.hora) : null;
+
       const response = await fetch("/api/recordatorios", {
         method: "POST",
         headers: {
@@ -37,9 +45,9 @@ export function ReminderModal({ pago, onClose, onSuccess }: ReminderModalProps) 
         },
         body: JSON.stringify({
           id_pago: pago.id,
-          fecha_aviso: formData.fecha_aviso,
-            hora: formData.hora || null,
-            mensaje: formData.mensaje || null,
+          fecha_aviso: payloadFecha,
+          hora: payloadHora,
+          mensaje: formData.mensaje || null,
         }),
       });
 
@@ -66,13 +74,7 @@ export function ReminderModal({ pago, onClose, onSuccess }: ReminderModalProps) 
     }).format(amount);
   };
 
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("es-CO", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  };
+  // Usar el formateador central `formatDate` importado
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">

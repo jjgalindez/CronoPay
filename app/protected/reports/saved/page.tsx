@@ -14,6 +14,7 @@ import {
   TrendingUp,
   TrendingDown,
 } from "lucide-react";
+import { formatDate } from '@/utils/formatters';
 
 interface Informe {
   id_informe: string;
@@ -60,18 +61,10 @@ export default function SavedReportsPage() {
 
   const getMonthName = (mesKey: number) => {
     const date = new Date(2025, mesKey - 1, 1);
-    return date.toLocaleDateString("es-CO", {
-      month: "long",
-    });
+    return date.toLocaleDateString("es-CO", { month: "long" });
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("es-CO", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  };
+  const formatDateWrapper = (dateString: string) => formatDate(dateString);
 
   const generateInformeText = (informe: Informe) => {
     const total = informe.total_pagado + informe.total_pendiente;
@@ -186,7 +179,7 @@ export default function SavedReportsPage() {
                     </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">
-                    Guardado: {formatDate(informe.created_at)}
+                    Guardado: {formatDateWrapper(informe.created_at)}
                   </p>
                 </CardHeader>
                 

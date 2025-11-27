@@ -5,6 +5,7 @@ import { PrismaClient } from '@/lib/generated/prisma'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Calendar, Mail, User, CheckCircle2, XCircle } from 'lucide-react'
+import { formatDate } from '@/utils/formatters';
 
 const prisma = new PrismaClient()
 
@@ -45,14 +46,7 @@ async function getUserPublicInfo(userId: string) {
   }
 }
 
-function formatDate(date: Date | null) {
-  if (!date) return 'N/A'
-  return new Date(date).toLocaleDateString('es-CO', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
+// Usar el formateador compartido `formatDate` importado arriba
 
 export default async function UserProfilePage({ params }: PageProps) {
   const { id } = await params

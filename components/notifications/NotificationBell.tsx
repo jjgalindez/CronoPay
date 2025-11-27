@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Bell, Loader2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { combineDateTime, formatDate as formatDateUtil, formatDateTime as formatDateTimeUtil } from '@/utils/formatters';
+import { combineDateTime, formatDate as formatDateUtil, formatDateTime as formatDateTimeUtil, formatReminderTime } from '@/utils/formatters';
 
 interface Recordatorio {
   id_recordatorio: string;
@@ -40,6 +40,21 @@ export function NotificationBell() {
       fetchRecordatorios();
     }
   }, [isOpen]);
+
+  // DEBUG: log received reminders for debugging time issues
+  useEffect(() => {
+    if (recordatorios.length > 0) {
+      console.debug('[NotificationBell] received recordatorios:', recordatorios);
+      recordatorios.forEach(r => {
+        try {
+          const combined = combineDateTime(r.fecha_aviso, r.hora);
+          console.debug('[NotificationBell] computed:', { id: r.id_recordatorio, fecha_aviso: r.fecha_aviso, hora: r.hora, combined: combined.toISOString(), formatted: formatReminderTime(r.fecha_aviso, r.hora) });
+        } catch (e) {
+          console.error('[NotificationBell] error computing reminder date:', e);
+        }
+      });
+    }
+  }, [recordatorios]);
 
   // Cerrar dropdown al hacer clic fuera
   useEffect(() => {
@@ -244,7 +259,7 @@ export function NotificationBell() {
                                 🔔 {timeInfo.text}
                               </Badge>
                               <span className="text-xs text-muted-foreground">
-                                Aviso: {formatDateTime(recordatorio.fecha_aviso, recordatorio.hora)}
+                                Aviso: {formatDateUtil(recordatorio.fecha_aviso)}, {formatReminderTime(recordatorio.fecha_aviso, recordatorio.hora)}
                               </span>
                             </div>
                           </div>

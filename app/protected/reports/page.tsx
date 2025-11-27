@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { usePayments } from "@/components/context/PaymentContext";
+import { parseDate, formatDate } from '@/utils/formatters';
 import { useRouter } from "next/navigation";
 import { MonthSelector } from "@/components/reports/MonthSelector";
 import { MetricsCards } from "@/components/reports/MetricsCards";
@@ -22,10 +23,8 @@ export default function ReportsPage() {
   const monthlyPayments = useMemo(() => {
     const [year, month] = selectedMonth.split("-").map(Number);
     return pagos.filter((pago) => {
-      const pagoDate = new Date(pago.fecha_vencimiento);
-      return (
-        pagoDate.getFullYear() === year && pagoDate.getMonth() === month - 1
-      );
+      const pagoDate = parseDate(pago.fecha_vencimiento);
+      return pagoDate.getFullYear() === year && pagoDate.getMonth() === month - 1;
     });
   }, [pagos, selectedMonth]);
 
@@ -81,12 +80,7 @@ export default function ReportsPage() {
     }).format(amount);
   };
 
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("es-CO", {
-      day: "2-digit",
-      month: "short",
-    });
-  };
+  const formatDateWrapper = (date: Date | string) => formatDate(date);
 
   return (
     <div className="container mx-auto px-6 py-8 space-y-6">
@@ -125,7 +119,7 @@ export default function ReportsPage() {
             payments={monthlyPayments}
             loading={loading}
             formatCurrency={formatCurrency}
-            formatDate={formatDate}
+            formatDate={formatDateWrapper}
           />
         </div>
 

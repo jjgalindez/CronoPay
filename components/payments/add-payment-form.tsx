@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar, CreditCard, DollarSign, Tag } from 'lucide-react';
 import { usePayments } from '@/components/context/PaymentContext';
+import { parseDate } from '@/utils/formatters';
 
 interface AddPaymentFormProps {
     onSuccess?: () => void;
@@ -98,7 +99,7 @@ export default function AddPaymentForm({ onSuccess, onCancel }: AddPaymentFormPr
             await addPayment({
                 titulo: formData.titulo,
                 monto: parseFloat(formData.monto),
-                fecha_vencimiento: new Date(formData.fecha_vencimiento),
+                fecha_vencimiento: parseDate(formData.fecha_vencimiento),
                 categoria: selectedCategoria?.nombre || '',
                 metodo_pago: selectedMetodo?.tipo || '',
                 estado: 'Pendiente'

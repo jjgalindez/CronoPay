@@ -94,13 +94,6 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
       }
       
       const data = await response.json();
-      // Log raw response for debugging
-      console.log('[PaymentContext] GET /api/pagos - raw response count:', data?.pagos?.length ?? 0);
-      try {
-        console.log('[PaymentContext] GET /api/pagos - sample raw pagos:', JSON.stringify((data?.pagos || []).slice(0, 5)));
-      } catch (e) {
-        console.log('[PaymentContext] GET /api/pagos - could not stringify raw pagos sample', e);
-      }
       
       // Conversion de fechas y estados
       const processedPayments = (data.pagos || []).map((pago: any) => ({
@@ -115,14 +108,6 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
         created_at: parseDate(pago.created_at),
         updated_at: parseDate(pago.updated_at)
       }));
-
-      // Log processed payments for debugging
-      try {
-        console.log('[PaymentContext] processed payments count:', processedPayments.length);
-        console.log('[PaymentContext] sample processed pagos:', JSON.stringify(processedPayments.slice(0, 5)));
-      } catch (e) {
-        console.log('[PaymentContext] could not stringify processed payments', e);
-      }
       
       setPagos(processedPayments);
     } catch (err) {

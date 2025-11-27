@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { PrismaClient } from '@/lib/generated/prisma';
+import { parseDate } from '@/utils/formatters';
 
 const prisma = new PrismaClient();
 
@@ -80,7 +81,7 @@ export async function PATCH(
 
     // Convert fecha_vencimiento to Date if present
     if (updateData.fecha_vencimiento) {
-      updateData.fecha_vencimiento = new Date(updateData.fecha_vencimiento);
+      updateData.fecha_vencimiento = parseDate(updateData.fecha_vencimiento as any);
     }
 
     const updatedPago = await prisma.pago.update({

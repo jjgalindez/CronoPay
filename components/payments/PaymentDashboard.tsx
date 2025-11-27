@@ -2,6 +2,7 @@
 
 import { Suspense, useMemo } from 'react';
 import { usePayments } from '@/components/context/PaymentContext';
+import { parseDate, formatDate } from '@/utils/formatters';
 import PaymentMetricsCard from '@/components/payments/PaymentMetricsCard';
 import UpcomingPaymentsCard from '@/components/payments/UpcomingPaymentsCard';
 import PaymentCalendarReminders from '@/components/payments/PaymentCalendarReminders';
@@ -82,7 +83,7 @@ export default function PaymentDashboard() {
       const month = date.getMonth();
       
       const monthPayments = pagos.filter((pago) => {
-        const pagoDate = new Date(pago.fecha_vencimiento);
+        const pagoDate = parseDate(pago.fecha_vencimiento);
         return pagoDate.getFullYear() === year && pagoDate.getMonth() === month;
       });
 
@@ -102,11 +103,8 @@ export default function PaymentDashboard() {
   const categoryDistribution = useMemo(() => {
     const now = new Date();
     const currentMonthPayments = pagos.filter((pago) => {
-      const pagoDate = new Date(pago.fecha_vencimiento);
-      return (
-        pagoDate.getFullYear() === now.getFullYear() &&
-        pagoDate.getMonth() === now.getMonth()
-      );
+      const pagoDate = parseDate(pago.fecha_vencimiento);
+      return pagoDate.getFullYear() === now.getFullYear() && pagoDate.getMonth() === now.getMonth();
     });
 
     const categoryMap = new Map<string, number>();
@@ -134,11 +132,7 @@ export default function PaymentDashboard() {
   // Actividad reciente (últimos 10 pagos)
   const recentActivity = useMemo(() => {
     return [...pagos]
-      .sort((a, b) => {
-        const dateA = new Date(a.fecha_vencimiento);
-        const dateB = new Date(b.fecha_vencimiento);
-        return dateB.getTime() - dateA.getTime();
-      })
+      .sort((a, b) => parseDate(b.fecha_vencimiento).getTime() - parseDate(a.fecha_vencimiento).getTime())
       .slice(0, 10);
   }, [pagos]);
 
@@ -249,7 +243,7 @@ export default function PaymentDashboard() {
       // Generar CSV simple
       const headers = ['Fecha', 'Titulo', 'Categoría', 'Monto', 'Estado'];
       const rows = recentActivity.map(pago => [
-        new Date(pago.fecha_vencimiento).toLocaleDateString('es-CO'),
+        formatDate(pago.fecha_vencimiento),
         pago.titulo,
         pago.categoria,
         `$${pago.monto.toLocaleString('es-CO')}`,
@@ -373,11 +367,7 @@ export default function PaymentDashboard() {
                   recentActivity.map((pago) => (
                     <tr key={pago.id} className="border-b last:border-0">
                       <td className="py-4">
-                        {new Date(pago.fecha_vencimiento).toLocaleDateString("es-CO", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })}
+                          {formatDate(pago.fecha_vencimiento)}
                       </td>
                       <td className="py-4">{pago.titulo}</td>
                       <td className="py-4">{pago.categoria}</td>

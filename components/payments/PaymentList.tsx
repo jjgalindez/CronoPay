@@ -2,6 +2,7 @@
 
 //import { Badge } from "@/components/ui/badge";
 import { PaymentStatusBadge } from "./PaymentStatusBadge";
+import { formatDate } from '@/utils/formatters';
 
 type Payment = {
   id: string;
@@ -24,7 +25,7 @@ export function PaymentList({ payments }: { payments: Payment[] }) {
             <div>
               <p className="font-medium">{p.name}</p>
               <p className="text-xs text-muted-foreground">
-                Vence: {new Date(p.dueDate).toLocaleDateString()}
+                Vence: {formatDate(p.dueDate)}
               </p>
             </div>
             <div className="flex items-center gap-3">
